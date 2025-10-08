@@ -8,7 +8,6 @@ function UserScreen({
 	setCalirado,
 	pontoReferencia,
 	setPontoReferencia,
-	pontos,
 	onGoHome,
 }) {
 	const [showQRScanner, setShowQRScanner] = useState(false);
@@ -108,7 +107,6 @@ function UserScreen({
 					mode="user"
 					calibrado={calibrado}
 					pontoReferencia={pontoReferencia}
-					pontos={pontos}
 				/>
 			)} 
 		</div>
