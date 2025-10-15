@@ -152,7 +152,7 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado }) {
 		const random = Math.random();
 		let cumulativeProbability = 0;
 
-		const rarityOrder = ['epico', 'raro', 'comum'];
+		const rarityOrder = ['ultrararo', 'raro', 'comum'];
 		
 		for (const rarity of rarityOrder) {
 			cumulativeProbability += prizeSystem[rarity].probability;
