@@ -39,7 +39,7 @@ function ARView({ calibrado, pontoReferencia }) {
 				{ name: "Charmander", description: "Chaveiro com modelo 3D da Charmander", urlImg: "https://projectpokemon.org/images/normal-sprite/charmander.gif", rarity: "Raro" },
 			]
 		},
-		epico: {
+		ultrararo: {
 			probability: 0.15,
 			prizes: [
 				{ name: "Pikachu", description: "Chaveiro com modelo 3D do Pikachu", urlImg: "https://projectpokemon.org/images/normal-sprite/pikachu.gif", rarity: "Ultra-Raro" },
@@ -152,7 +152,7 @@ function ARView({ calibrado, pontoReferencia }) {
 		const random = Math.random();
 		let cumulativeProbability = 0;
 
-		const rarityOrder = ['lendario', 'epico', 'raro', 'comum'];
+		const rarityOrder = ['ultrararo', 'raro', 'comum'];
 		
 		for (const rarity of rarityOrder) {
 			cumulativeProbability += prizeSystem[rarity].probability;
@@ -546,8 +546,7 @@ function ARView({ calibrado, pontoReferencia }) {
 							zIndex: 1,
 							position: "relative"
 						}}>
-							{currentPrize.rarity === "Lendário" ? "INCRÍVEL!" : 
-							 currentPrize.rarity === "Épico" ? "FANTÁSTICO!" : 
+							{currentPrize.rarity === "Ultra-Raro" ? "INCRÍVEL!" : 
 							 currentPrize.rarity === "Raro" ? "PARABÉNS!" : "Você ganhou!"}
 						</h2>
 						
@@ -591,9 +590,8 @@ function ARView({ calibrado, pontoReferencia }) {
 							zIndex: 1,
 							position: "relative"
 						}}>
-							{currentPrize.rarity === "Lendário" && "Chance: 3% - Extremamente raro! 💎"}
-							{currentPrize.rarity === "Épico" && "Chance: 12% - Muito raro! ⭐"}
-							{currentPrize.rarity === "Raro" && "Chance: 25% - Raro! 🔮"}
+							{currentPrize.rarity === "Ultra-Raro" && "Chance: 15% - Extremamente raro! 💎"}
+							{currentPrize.rarity === "Raro" && "Chance: 35% - Raro! 🔮"}
 							{currentPrize.rarity === "Comum" && "Chance: 60% - Comum 📋"}
 						</div>
 						
