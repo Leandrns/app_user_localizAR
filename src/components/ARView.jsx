@@ -5,7 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { supabase } from '../supabaseClient';
 
 
-function ARView({ calibrado, pontoReferencia }) {
+function ARView({ calibrado, pontoReferencia, pontoSelecionado }) {
 	const containerRef = useRef(null);
 	const sceneRef = useRef(null);
 	const rendererRef = useRef(null);
@@ -54,14 +54,14 @@ function ARView({ calibrado, pontoReferencia }) {
 	};
 
 	useEffect(() => {
-		if (calibrado && containerRef.current) {
+		if (calibrado && pontoSelecionado && containerRef.current) {
 			initAR();
 		}
 
 		return () => {
 			cleanup();
 		};
-	}, [calibrado]);
+	}, [calibrado, pontoSelecionado]);
 
 	const initAR = () => {
 		const container = containerRef.current;
@@ -132,7 +132,7 @@ function ARView({ calibrado, pontoReferencia }) {
 				}
 
 				setTimeout(() => {
-					carregarPontosSalvos();
+					carregarPontoSelecionado();
 				}, 1000);
 			}
 		});
@@ -152,7 +152,7 @@ function ARView({ calibrado, pontoReferencia }) {
 		const random = Math.random();
 		let cumulativeProbability = 0;
 
-		const rarityOrder = ['ultrararo', 'raro', 'comum'];
+		const rarityOrder = ['epico', 'raro', 'comum'];
 		
 		for (const rarity of rarityOrder) {
 			cumulativeProbability += prizeSystem[rarity].probability;
@@ -265,41 +265,26 @@ function ARView({ calibrado, pontoReferencia }) {
 		return t * (2 - t);
 	};
 
-	const carregarPontosSalvos = async () => {
-		if (!calibrado || !pontoReferencia) return;
+	// MODIFICAÇÃO PRINCIPAL: Carrega apenas o ponto selecionado
+	const carregarPontoSelecionado = () => {
+		if (!calibrado || !pontoReferencia || !pontoSelecionado) return;
 
-		try {
-			const { data, error } = await supabase
-				.from("pontos")
-				.select("*")
-				.eq("qr_referencia", pontoReferencia.qrCode);
+		console.log(`✅ Carregando ponto selecionado: ${pontoSelecionado.nome}`);
 
-			if (error) {
-				console.error("Erro ao carregar pontos do Supabase:", error.message);
-				return;
-			}
+		const posicaoAbsoluta = new THREE.Vector3(
+			pontoSelecionado.pos_x,
+			pontoSelecionado.pos_y,
+			pontoSelecionado.pos_z
+		);
 
-			console.log(`Carregando ${data.length} pontos do banco...`);
-
-			data.forEach((ponto, index) => {
-				const posicaoAbsoluta = new THREE.Vector3(
-					ponto.pos_x,
-					ponto.pos_y,
-					ponto.pos_z
-				);
-
-				if (pontoReferencia.arPosition) {
-					posicaoAbsoluta.add(pontoReferencia.arPosition.clone());
-				}
-
-				criarModeloCarregado(posicaoAbsoluta, ponto, index);
-			});
-		} catch (err) {
-			console.error("Erro inesperado ao buscar pontos:", err);
+		if (pontoReferencia.arPosition) {
+			posicaoAbsoluta.add(pontoReferencia.arPosition.clone());
 		}
+
+		criarModeloCarregado(posicaoAbsoluta, pontoSelecionado);
 	};
 
-	const criarModeloCarregado = (posicao, dadosPonto, index) => {
+	const criarModeloCarregado = (posicao, dadosPonto) => {
 		loaderRef.current.load(
 			"/map_pointer_3d_icon.glb",
 			(gltf) => {
@@ -313,7 +298,7 @@ function ARView({ calibrado, pontoReferencia }) {
 					dadosOriginais: dadosPonto,
 				};
 
-				const cor = new THREE.Color().setHSL(Math.random(), 0.7, 0.5);
+				const cor = new THREE.Color().setHSL(0.3, 0.8, 0.5); // Cor verde para destaque
 
 				model.traverse((child) => {
 					if (child.isMesh) {
@@ -328,15 +313,14 @@ function ARView({ calibrado, pontoReferencia }) {
 			undefined,
 			(error) => {
 				console.error("Erro ao carregar modelo:", error);
-				criarCuboCarregado(posicao, dadosPonto, index);
+				criarCuboCarregado(posicao, dadosPonto);
 			}
 		);
 	};
 
-	const criarCuboCarregado = (posicao, dadosPonto, index) => {
+	const criarCuboCarregado = (posicao, dadosPonto) => {
 		const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-		const hue = (index * 0.1) % 1;
-		const cor = new THREE.Color().setHSL(hue, 0.7, 0.6);
+		const cor = new THREE.Color().setHSL(0.3, 0.8, 0.5);
 
 		const material = new THREE.MeshLambertMaterial({ color: cor });
 		const cube = new THREE.Mesh(geometry, material);
@@ -410,10 +394,6 @@ function ARView({ calibrado, pontoReferencia }) {
 		const deltaMs = timestamp - last;
 		lastTimestampRef.current = timestamp;
 
-		if (frame && hitTestSource && localReferenceSpace) {
-			// Hit test não é necessário para visitor, mas mantém compatibilidade
-		}
-
 		if (flipAnimationsRef.current.length > 0) {
 			const toRemove = [];
 			flipAnimationsRef.current.forEach((anim, idx) => {
@@ -474,6 +454,25 @@ function ARView({ calibrado, pontoReferencia }) {
 					zIndex: 1,
 				}}
 			/>
+
+			{/* Info do ponto selecionado */}
+			<div style={{
+				position: "fixed",
+				top: "20px",
+				left: "50%",
+				transform: "translateX(-50%)",
+				backgroundColor: "rgba(0, 0, 0, 0.8)",
+				color: "#fff",
+				padding: "15px 25px",
+				borderRadius: "25px",
+				zIndex: 100,
+				border: "2px solid #4ecdc4",
+				fontSize: "16px",
+				fontWeight: "bold",
+				textAlign: "center"
+			}}>
+				<i className="fa-solid fa-location-dot"></i> {pontoSelecionado?.nome}
+			</div>
 
 			{showPrizeModal && currentPrize && (
 				<div 
