@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { supabase } from '../supabaseClient';
-import RareCandy from '../assets/Rare_Candy.png'
+
 
 function ARView({ calibrado, pontoReferencia }) {
 	const containerRef = useRef(null);
@@ -28,7 +28,7 @@ function ARView({ calibrado, pontoReferencia }) {
 		comum: {
 			probability: 0.50,
 			prizes: [
-				{ name: "Pacote com Balas", description: "Pacote com balas", urlImg: {RareCandy}, rarity: "Comum" },
+				{ name: "Pacote com Balas", description: "Pacote com balas", urlImg: "https://archives.bulbagarden.net/media/upload/thumb/2/25/Rare_Candy_SV.png/600px-Rare_Candy_SV.png?20220912142322", rarity: "Comum" },
 			]
 		},
 		raro: {
