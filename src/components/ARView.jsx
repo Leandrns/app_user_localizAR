@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { supabase } from '../supabaseClient';
+import {RareCandy} from '../assets/Rare_Candy.png'
 
 function ARView({ calibrado, pontoReferencia }) {
 	const containerRef = useRef(null);
@@ -25,39 +26,31 @@ function ARView({ calibrado, pontoReferencia }) {
 
 	const prizeSystem = {
 		comum: {
-			probability: 0.60,
+			probability: 0.50,
 			prizes: [
-				{ name: "Chansey", description: "Chaveiro com modelo 3D da Chansey", urlImg: "https://projectpokemon.org/images/normal-sprite/chansey.gif", rarity: "Comum" },
+				{ name: "Pacote com Balas", description: "Pacote com balas", urlImg: {RareCandy}, rarity: "Comum" },
 			]
 		},
 		raro: {
-			probability: 0.25,
+			probability: 0.35,
 			prizes: [
-				{ name: "Venusaur", description: "Chaveiro com modelo 3D do Venusaur", urlImg: "https://projectpokemon.org/images/normal-sprite/venusaur.gif", rarity: "Raro" },
+				{ name: "Bulbasaur", description: "Chaveiro com modelo 3D do Bulbasaur", urlImg: "https://projectpokemon.org/images/normal-sprite/bulbasaur.gif", rarity: "Raro" },
+				{ name: "Squirtle", description: "Chaveiro com modelo 3D do Squirtle", urlImg: "https://projectpokemon.org/images/normal-sprite/squirtle.gif", rarity: "Raro" },
+				{ name: "Charmander", description: "Chaveiro com modelo 3D da Charmander", urlImg: "https://projectpokemon.org/images/normal-sprite/charmander.gif", rarity: "Raro" },
 			]
 		},
 		epico: {
-			probability: 0.12,
+			probability: 0.15,
 			prizes: [
-				{ name: "Gengar", description: "Chaveiro com modelo 3D do Gengar", urlImg: "https://projectpokemon.org/images/normal-sprite/gengar.gif", rarity: "Épico" },
-				{ name: "Lucario", description: "Chaveiro com modelo 3D do Lucario", urlImg: "https://projectpokemon.org/images/normal-sprite/lucario.gif", rarity: "Épico" },
-				{ name: "Lapras", description: "Chaveiro com modelo 3D da Lapras", urlImg: "https://projectpokemon.org/images/normal-sprite/lapras.gif", rarity: "Épico" },
-				{ name: "Typhlosion", description: "Chaveiro com modelo 3D do Typhlosion", urlImg: "https://projectpokemon.org/images/normal-sprite/typhlosion.gif", rarity: "Épico" }
+				{ name: "Pikachu", description: "Chaveiro com modelo 3D do Pikachu", urlImg: "https://projectpokemon.org/images/normal-sprite/pikachu.gif", rarity: "Ultra-raro" },
 			]
 		},
-		lendario: {
-			probability: 0.03,
-			prizes: [
-				{ name: "Arceus", description: "Chaveiro com modelo 3D do Arceus", urlImg: "https://projectpokemon.org/images/normal-sprite/arceus.gif", rarity: "Lendário" },
-			]
-		}
 	};
 
 	const rarityColors = {
 		"Comum": "#95a5a6",
-		"Raro": "#3498db",
-		"Épico": "#9b59b6",
-		"Lendário": "#f1c40f"
+		"Raro": "#3477db",
+		"Ultra-Raro": "#f1c40f"
 	};
 
 	useEffect(() => {
