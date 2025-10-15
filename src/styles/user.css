@@ -27,7 +27,7 @@ html, body, #root {
 .user-card {
     width: 100%;
     max-width: 420px; 
-    max-height: 80%;
+    max-height: 50%;
     z-index: 100;
     background-color: #1e1e1e;
     color: #e0e0e0;
