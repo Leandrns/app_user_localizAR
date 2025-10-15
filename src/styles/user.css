@@ -181,10 +181,10 @@ html, body, #root {
 .selected-point-info {
     background-color: rgba(5, 213, 69, 0.15);
     border: 2px solid #05d545;
-    padding: 1rem;
+    padding: 0.8rem;
     border-radius: 8px;
     color: #05d545;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     display: flex;
     align-items: center;
     justify-content: center;

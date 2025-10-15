@@ -469,25 +469,6 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 				}}
 			/>
 
-			{/* Info do ponto selecionado */}
-			<div style={{
-				position: "fixed",
-				top: "20px",
-				left: "50%",
-				transform: "translateX(-50%)",
-				backgroundColor: "rgba(0, 0, 0, 0.8)",
-				color: "#fff",
-				padding: "15px 25px",
-				borderRadius: "25px",
-				zIndex: 100,
-				border: "2px solid #4ecdc4",
-				fontSize: "16px",
-				fontWeight: "bold",
-				textAlign: "center"
-			}}>
-				<i className="fa-solid fa-location-dot"></i> {pontoSelecionado?.nome || pontoSelecionado}
-			</div>
-
 			{showPrizeModal && currentPrize && (
 				<div 
 					style={{
