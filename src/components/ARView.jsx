@@ -28,7 +28,7 @@ function ARView({ calibrado, pontoReferencia }) {
 		comum: {
 			probability: 0.50,
 			prizes: [
-				{ name: "Pacote com Balas", description: "Pacote com balas", urlImg: "https://archives.bulbagarden.net/media/upload/thumb/2/25/Rare_Candy_SV.png/600px-Rare_Candy_SV.png?20220912142322", rarity: "Comum" },
+				{ name: "Pacote com Balas", description: "Pacote com balas", urlImg: "https://wreythe.com/cdn/shop/files/RareCandy_cc08a78e-72d7-459a-8ea3-9a57030c40b1.png?v=1693346538&width=600", rarity: "Comum" },
 			]
 		},
 		raro: {
