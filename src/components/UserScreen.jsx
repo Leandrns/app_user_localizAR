@@ -141,7 +141,12 @@ function UserScreen({
 									value={pontoSelecionado?.id || ""}
 									onChange={(e) => {
 										const ponto = pontosDisponiveis.find(p => p.id === e.target.value);
-										setPontoSelecionado(ponto || null);
+										const valorSelect = e.target.value;
+										if (valorSelect == "Todos") {
+											setPontoSelecionado(valorSelect);
+										} else {
+											setPontoSelecionado(ponto || null);
+										}
 									}}
 								>
 									<option value="">-- Selecione um ponto --</option>
@@ -150,6 +155,7 @@ function UserScreen({
 											{ponto.nome}
 										</option>
 									))}
+									<option value="Todos">Todos</option>
 								</select>
 							)}
 						</div>
@@ -189,6 +195,7 @@ function UserScreen({
 					calibrado={calibrado}
 					pontoReferencia={pontoReferencia}
 					pontoSelecionado={pontoSelecionado}
+					pontosDisponiveis={pontosDisponiveis}
 				/>
 			)}
 		</div>

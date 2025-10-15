@@ -5,7 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { supabase } from '../supabaseClient';
 
 
-function ARView({ calibrado, pontoReferencia, pontoSelecionado }) {
+function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponiveis }) {
 	const containerRef = useRef(null);
 	const sceneRef = useRef(null);
 	const rendererRef = useRef(null);
@@ -269,19 +269,33 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado }) {
 	const carregarPontoSelecionado = () => {
 		if (!calibrado || !pontoReferencia || !pontoSelecionado) return;
 
-		console.log(`✅ Carregando ponto selecionado: ${pontoSelecionado.nome}`);
+		if (pontoSelecionado == "Todos") {
+			pontosDisponiveis.forEach((ponto, index) => {
+				const posicaoAbsoluta = new THREE.Vector3(
+					ponto.pos_x,
+					ponto.pos_y,
+					ponto.pos_z
+				);
 
-		const posicaoAbsoluta = new THREE.Vector3(
-			pontoSelecionado.pos_x,
-			pontoSelecionado.pos_y,
-			pontoSelecionado.pos_z
-		);
-
-		if (pontoReferencia.arPosition) {
-			posicaoAbsoluta.add(pontoReferencia.arPosition.clone());
+				if (pontoReferencia.arPosition) {
+					posicaoAbsoluta.add(pontoReferencia.arPosition.clone());
+				}
+				criarModeloCarregado(posicaoAbsoluta, ponto, index);
+			});
+		} else {
+			const posicaoAbsoluta = new THREE.Vector3(
+				pontoSelecionado.pos_x,
+				pontoSelecionado.pos_y,
+				pontoSelecionado.pos_z
+			);
+	
+			if (pontoReferencia.arPosition) {
+				posicaoAbsoluta.add(pontoReferencia.arPosition.clone());
+			}
+	
+			criarModeloCarregado(posicaoAbsoluta, pontoSelecionado);
 		}
 
-		criarModeloCarregado(posicaoAbsoluta, pontoSelecionado);
 	};
 
 	const criarModeloCarregado = (posicao, dadosPonto) => {
