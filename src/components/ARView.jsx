@@ -485,7 +485,7 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 				fontWeight: "bold",
 				textAlign: "center"
 			}}>
-				<i className="fa-solid fa-location-dot"></i> {pontoSelecionado?.nome}
+				<i className="fa-solid fa-location-dot"></i> {pontoSelecionado?.nome || pontoSelecionado}
 			</div>
 
 			{showPrizeModal && currentPrize && (

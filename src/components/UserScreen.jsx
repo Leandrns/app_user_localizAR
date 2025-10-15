@@ -163,7 +163,7 @@ function UserScreen({
 						{pontoSelecionado && (
 							<div className="selected-point-info">
 								<i className="fa-solid fa-check-circle"></i> 
-								Ponto selecionado: <strong>{pontoSelecionado.nome}</strong>
+								Ponto selecionado: <strong>{pontoSelecionado?.nome || pontoSelecionado}</strong>
 							</div>
 						)}
 						
