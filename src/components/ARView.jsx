@@ -28,7 +28,7 @@ function ARView({ calibrado, pontoReferencia }) {
 		comum: {
 			probability: 0.50,
 			prizes: [
-				{ name: "Pacote com Balas", description: "Pacote com balas", urlImg: {RareCandy}, rarity: "Comum" },
+				{ name: "Pacote com Balas", description: "Pacote com balas", urlImg: RareCandy, rarity: "Comum" },
 			]
 		},
 		raro: {
