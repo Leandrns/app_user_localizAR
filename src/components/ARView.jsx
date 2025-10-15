@@ -592,7 +592,7 @@ function ARView({ calibrado, pontoReferencia }) {
 						}}>
 							{currentPrize.rarity === "Ultra-Raro" && "Chance: 15% - Extremamente raro! 💎"}
 							{currentPrize.rarity === "Raro" && "Chance: 35% - Raro! 🔮"}
-							{currentPrize.rarity === "Comum" && "Chance: 60% - Comum 📋"}
+							{currentPrize.rarity === "Comum" && "Chance: 50% - Comum 📋"}
 						</div>
 						
 						<button
