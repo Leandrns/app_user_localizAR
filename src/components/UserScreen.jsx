@@ -114,8 +114,8 @@ function UserScreen({
 
 						<div className="info-group">
 							<div className="info-item">
-								<span>Bem-vindo(a) ao evento</span>
-								{pontoReferencia.qrCode}
+								<span>Bem-vindo(a) ao evento: </span>
+								<strong>{pontoReferencia.qrCode}</strong>
 							</div>
 						</div>
 
