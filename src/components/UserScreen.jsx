@@ -138,7 +138,7 @@ function UserScreen({
 								<select
 									id="ponto-select"
 									className="ponto-select"
-									value={pontoSelecionado?.id || ""}
+									value={pontoSelecionado?.id || pontoSelecionado || ""}
 									onChange={(e) => {
 										const ponto = pontosDisponiveis.find(p => p.id === e.target.value);
 										const valorSelect = e.target.value;
