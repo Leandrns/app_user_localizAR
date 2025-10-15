@@ -42,7 +42,7 @@ function ARView({ calibrado, pontoReferencia }) {
 		epico: {
 			probability: 0.15,
 			prizes: [
-				{ name: "Pikachu", description: "Chaveiro com modelo 3D do Pikachu", urlImg: "https://projectpokemon.org/images/normal-sprite/pikachu.gif", rarity: "Ultra-raro" },
+				{ name: "Pikachu", description: "Chaveiro com modelo 3D do Pikachu", urlImg: "https://projectpokemon.org/images/normal-sprite/pikachu.gif", rarity: "Ultra-Raro" },
 			]
 		},
 	};
