@@ -59,6 +59,7 @@ function ARView({
 			}
 			alert("requisição deu bom")
 			setAvailablePrizes(data || "vazio setado");
+			alert(availablePrizes)
 		} catch (err) {
 			console.error("Erro ao carregar prêmios:", err);
 		}
