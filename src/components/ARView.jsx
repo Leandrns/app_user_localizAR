@@ -39,7 +39,6 @@ function ARView({
 			const { data, error } = await supabase
 				.from("recompensas")
 				.select("*")
-				.gt("quantidade", 0)
 
 			if (error) throw error;
 			setAvailablePrizes(data || []);
@@ -74,8 +73,8 @@ function ARView({
 		}
 
 		// 3. Filtra prêmios com estoque
-		const disponíveis = availablePrizes.filter((r) => r.quantidade > 0);
-		if (disponíveis.length === 0) {
+		const disponiveis = availablePrizes.filter((r) => r.quantidade > 0);
+		if (disponiveis.length === 0) {
 			alert("Não há mais prêmios disponíveis no momento 😢");
 			return null;
 		}
@@ -83,16 +82,16 @@ function ARView({
 		// 4. Sorteia baseado em probabilidade
 		const random = Math.random();
 		let cumulative = 0;
-		const totalProb = disponíveis.reduce((sum, r) => sum + r.probability, 0);
+		const totalProb = disponiveis.reduce((sum, r) => sum + r.probability, 0);
 
-		for (const reward of disponíveis) {
+		for (const reward of disponiveis) {
 			cumulative += reward.probability / totalProb;
 			if (random <= cumulative) {
 				return reward;
 			}
 		}
 
-		return disponíveis[0];
+		return disponiveis[0];
 	};
 
 	const rarityColors = {
