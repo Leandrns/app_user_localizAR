@@ -39,8 +39,7 @@ function ARView({
 			const { data, error } = await supabase
 				.from("recompensas")
 				.select("*")
-				.gt("quantidade")
-				.order("rarity");
+				.gt("quantidade", 0)
 
 			if (error) throw error;
 			setAvailablePrizes(data || []);
