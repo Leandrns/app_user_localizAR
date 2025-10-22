@@ -32,17 +32,13 @@ function ARView({
 	useEffect(() => {
 		if (calibrado && pontoSelecionado && containerRef.current) {
 			initAR();
+			loadAvailablePrizes();
 		}
 
 		return () => {
 			cleanup();
 		};
 	}, [calibrado, pontoSelecionado]);
-
-	// Carrega prêmios disponíveis do Supabase
-	useEffect(() => {
-		loadAvailablePrizes();
-	}, []);
 
 	const loadAvailablePrizes = async () => {
 		try {
