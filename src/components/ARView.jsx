@@ -26,8 +26,18 @@ function ARView({
 
 	const [showPrizeModal, setShowPrizeModal] = useState(false);
 	const [currentPrize, setCurrentPrize] = useState(null);
-	const [availablePrizes, setAvailablePrizes] = useState([]);
+	const [availablePrizes, setAvailablePrizes] = useState("vazio");
 	const clickCounterRef = useRef(new Map());
+
+	useEffect(() => {
+		if (calibrado && pontoSelecionado && containerRef.current) {
+			initAR();
+		}
+
+		return () => {
+			cleanup();
+		};
+	}, [calibrado, pontoSelecionado]);
 
 	// Carrega prêmios disponíveis do Supabase
 	useEffect(() => {
@@ -44,7 +54,7 @@ function ARView({
 			if (error) {
 				throw error;
 			}
-			setAvailablePrizes(data || "não tem nada");
+			setAvailablePrizes(data || "vazio setado");
 		} catch (err) {
 			console.error("Erro ao carregar prêmios:", err);
 		}
@@ -105,15 +115,6 @@ function ARView({
 		"Ultra-Raro": "#f1c40f",
 	};
 
-	useEffect(() => {
-		if (calibrado && pontoSelecionado && containerRef.current) {
-			initAR();
-		}
-
-		return () => {
-			cleanup();
-		};
-	}, [calibrado, pontoSelecionado]);
 
 	const initAR = () => {
 		const container = containerRef.current;
