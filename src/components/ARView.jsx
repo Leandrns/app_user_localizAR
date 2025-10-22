@@ -32,7 +32,6 @@ function ARView({
 	useEffect(() => {
 		if (calibrado && pontoSelecionado && containerRef.current) {
 			initAR();
-			loadAvailablePrizes();
 		}
 
 		return () => {
@@ -40,16 +39,25 @@ function ARView({
 		};
 	}, [calibrado, pontoSelecionado]);
 
+	// Carrega prêmios disponíveis do Supabase
+	useEffect(() => {
+		alert("rodou useEffect")
+		loadAvailablePrizes();
+	}, []);
+
 	const loadAvailablePrizes = async () => {
 		try {
+			alert("entrou na requisição")
 			const { data, error } = await supabase
 				.from("recompensas")
 				.select("*")
 				.gt("quantidade", 0)
 
 			if (error) {
+				alert("erro na requisição")
 				throw error;
 			}
+			alert("requisição deu bom")
 			setAvailablePrizes(data || "vazio setado");
 		} catch (err) {
 			console.error("Erro ao carregar prêmios:", err);
