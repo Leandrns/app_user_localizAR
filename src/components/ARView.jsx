@@ -72,6 +72,8 @@ function ARView({
 			return null;
 		}
 
+		alert(availablePrizes)
+
 		// 3. Filtra prêmios com estoque
 		const disponiveis = availablePrizes.filter((r) => r.quantidade > 0);
 		if (disponiveis.length === 0) {
