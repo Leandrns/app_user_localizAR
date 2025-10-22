@@ -42,10 +42,9 @@ function ARView({
 				.gt("quantidade", 0)
 
 			if (error) {
-				alert(error)
 				throw error;
 			}
-			setAvailablePrizes(data || []);
+			setAvailablePrizes(data || "não tem nada");
 		} catch (err) {
 			console.error("Erro ao carregar prêmios:", err);
 		}
