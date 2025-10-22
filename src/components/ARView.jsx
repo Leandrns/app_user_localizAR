@@ -39,8 +39,12 @@ function ARView({
 			const { data, error } = await supabase
 				.from("recompensas")
 				.select("*")
+				.gt("quantidade", 0)
 
-			if (error) throw error;
+			if (error) {
+				alert(error)
+				throw error;
+			}
 			setAvailablePrizes(data || []);
 		} catch (err) {
 			console.error("Erro ao carregar prêmios:", err);
