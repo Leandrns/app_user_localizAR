@@ -2,10 +2,14 @@ import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { supabase } from '../supabaseClient';
+import { supabase } from "../supabaseClient";
 
-
-function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponiveis }) {
+function ARView({
+	calibrado,
+	pontoReferencia,
+	pontoSelecionado,
+	pontosDisponiveis,
+}) {
 	const containerRef = useRef(null);
 	const sceneRef = useRef(null);
 	const rendererRef = useRef(null);
@@ -19,38 +23,83 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 	const tempMatrixRef = useRef(new THREE.Matrix4());
 	const flipAnimationsRef = useRef([]);
 	const lastTimestampRef = useRef(0);
-	
+
 	const [showPrizeModal, setShowPrizeModal] = useState(false);
 	const [currentPrize, setCurrentPrize] = useState(null);
+	const [availablePrizes, setAvailablePrizes] = useState([]);
 	const clickCounterRef = useRef(new Map());
 
-	const prizeSystem = {
-		comum: {
-			probability: 0.50,
-			prizes: [
-				{ name: "Pacote com Balas", description: "Pacote com balas", urlImg: "https://wreythe.com/cdn/shop/files/RareCandy_cc08a78e-72d7-459a-8ea3-9a57030c40b1.png?v=1693346538&width=600", rarity: "Comum" },
-			]
-		},
-		raro: {
-			probability: 0.35,
-			prizes: [
-				{ name: "Bulbasaur", description: "Chaveiro com modelo 3D do Bulbasaur", urlImg: "https://projectpokemon.org/images/normal-sprite/bulbasaur.gif", rarity: "Raro" },
-				{ name: "Squirtle", description: "Chaveiro com modelo 3D do Squirtle", urlImg: "https://projectpokemon.org/images/normal-sprite/squirtle.gif", rarity: "Raro" },
-				{ name: "Charmander", description: "Chaveiro com modelo 3D da Charmander", urlImg: "https://projectpokemon.org/images/normal-sprite/charmander.gif", rarity: "Raro" },
-			]
-		},
-		ultrararo: {
-			probability: 0.15,
-			prizes: [
-				{ name: "Pikachu", description: "Chaveiro com modelo 3D do Pikachu", urlImg: "https://projectpokemon.org/images/normal-sprite/pikachu.gif", rarity: "Ultra-Raro" },
-			]
-		},
+	// Carrega prêmios disponíveis do Supabase
+	useEffect(() => {
+		loadAvailablePrizes();
+	}, []);
+
+	const loadAvailablePrizes = async () => {
+		try {
+			const { data, error } = await supabase
+				.from("recompensas")
+				.select("*")
+				.gt("quantidade", 0)
+				.order("rarity");
+
+			if (error) throw error;
+			setAvailablePrizes(data || []);
+		} catch (err) {
+			console.error("Erro ao carregar prêmios:", err);
+		}
+	};
+
+	// Sistema de prêmios melhorado
+	const generatePrizeByProbability = async () => {
+		// 1. Verifica se visitante já ganhou prêmio
+		const localVisitor = localStorage.getItem("localizar_visitor");
+		if (!localVisitor) {
+			alert("Você precisa estar cadastrado para ganhar prêmios!");
+			return null;
+		}
+
+		const visitor = JSON.parse(localVisitor);
+
+		// 2. Verifica no Supabase se já ganhou
+		const { data: visitorData, error: visitorError } = await supabase
+			.from("visitantes")
+			.select("ganhou_premio")
+			.eq("id", visitor.id)
+			.single();
+
+		if (visitorError || visitorData?.ganhou_premio) {
+			alert(
+				"Você já resgatou seu prêmio! Cada visitante pode ganhar apenas uma vez."
+			);
+			return null;
+		}
+
+		// 3. Filtra prêmios com estoque
+		const disponíveis = availablePrizes.filter((r) => r.quantidade > 0);
+		if (disponíveis.length === 0) {
+			alert("Não há mais prêmios disponíveis no momento 😢");
+			return null;
+		}
+
+		// 4. Sorteia baseado em probabilidade
+		const random = Math.random();
+		let cumulative = 0;
+		const totalProb = disponíveis.reduce((sum, r) => sum + r.probability, 0);
+
+		for (const reward of disponíveis) {
+			cumulative += reward.probability / totalProb;
+			if (random <= cumulative) {
+				return reward;
+			}
+		}
+
+		return disponíveis[0];
 	};
 
 	const rarityColors = {
-		"Comum": "#95a5a6",
-		"Raro": "#3477db",
-		"Ultra-Raro": "#f1c40f"
+		Comum: "#95a5a6",
+		Raro: "#3477db",
+		"Ultra-Raro": "#f1c40f",
 	};
 
 	useEffect(() => {
@@ -148,27 +197,7 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 		clickCounterRef.current.clear();
 	};
 
-	const generatePrizeByProbability = () => {
-		const random = Math.random();
-		let cumulativeProbability = 0;
-
-		const rarityOrder = ['ultrararo', 'raro', 'comum'];
-		
-		for (const rarity of rarityOrder) {
-			cumulativeProbability += prizeSystem[rarity].probability;
-			
-			if (random <= cumulativeProbability) {
-				const prizes = prizeSystem[rarity].prizes;
-				const randomIndex = Math.floor(Math.random() * prizes.length);
-				return prizes[randomIndex];
-			}
-		}
-
-		const commonPrizes = prizeSystem.comum.prizes;
-		return commonPrizes[Math.floor(Math.random() * commonPrizes.length)];
-	};
-
-	const onSelect = () => {
+	const onSelect = async () => {
 		const controller = controllerRef.current;
 		const scene = sceneRef.current;
 		if (!controller || !scene) return;
@@ -180,10 +209,15 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 		raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
 		raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
 
-		const intersects = raycaster.intersectObjects(selectableObjectsRef.current, true);
+		const intersects = raycaster.intersectObjects(
+			selectableObjectsRef.current,
+			true
+		);
+
 		if (intersects.length > 0) {
 			let selected = intersects[0].object;
 			let root = selected;
+
 			while (root.parent && !root.userData?.carregado) {
 				root = root.parent;
 			}
@@ -194,60 +228,128 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 			const newClickCount = currentClicks + 1;
 			clickCounterRef.current.set(objectId, newClickCount);
 
-			startFlipAnimation(root, { axis: "y", degree: (2*Math.PI), duration: 600 });
+			// Animação de flip
+			startFlipAnimation(root, { axis: "y", degree: 2 * Math.PI, duration: 600 });
 
 			if (newClickCount >= 3) {
-				const applyBlinkSmooth = (obj) => {
-					obj.traverse((child) => {
-						if (child.isMesh && child.material) {
-							const materials = Array.isArray(child.material) ? child.material : [child.material];
-							materials.forEach((mat) => {
-								if (mat && mat.color) {
-									const originalColor = mat.color.clone();
-									const flashColor = new THREE.Color(0xffffff);
-									let flashes = 0;
-									let direction = 1;
-									let progress = 0;
-
-									const interval = setInterval(() => {
-										progress += direction * 0.1;
-										if (progress >= 1) {
-											progress = 1;
-											direction = -1;
-											flashes++;
-										} else if (progress <= 0) {
-											progress = 0;
-											direction = 1;
-											flashes++;
-										}
-
-										mat.color.lerpColors(originalColor, flashColor, progress);
-
-										if (flashes >= 4) {
-											clearInterval(interval);
-											mat.color.copy(originalColor);
-										}
-									}, 20);
-								}
-							});
-						}
-					});
-				};
-
+				// Efeito visual de blink
 				applyBlinkSmooth(root);
 				clickCounterRef.current.set(objectId, 0);
-				
-				const prize = generatePrizeByProbability();
-				setCurrentPrize(prize);
-				
-				setTimeout(() => {
-					setShowPrizeModal(true);
-				}, 700);
+
+				// Sorteia prêmio
+				const prize = await generatePrizeByProbability();
+
+				if (prize) {
+					setCurrentPrize(prize);
+					setTimeout(() => {
+						setShowPrizeModal(true);
+					}, 700);
+				}
 			}
 		}
 	};
 
-	const startFlipAnimation = (object3D, { axis = "y", degree = Math.PI, duration = 600 } = {}) => {
+	const applyBlinkSmooth = (obj) => {
+		obj.traverse((child) => {
+			if (child.isMesh && child.material) {
+				const materials = Array.isArray(child.material)
+					? child.material
+					: [child.material];
+				materials.forEach((mat) => {
+					if (mat && mat.color) {
+						const originalColor = mat.color.clone();
+						const flashColor = new THREE.Color(0xffffff);
+						let flashes = 0;
+						let direction = 1;
+						let progress = 0;
+
+						const interval = setInterval(() => {
+							progress += direction * 0.1;
+							if (progress >= 1) {
+								progress = 1;
+								direction = -1;
+								flashes++;
+							} else if (progress <= 0) {
+								progress = 0;
+								direction = 1;
+								flashes++;
+							}
+
+							mat.color.lerpColors(originalColor, flashColor, progress);
+
+							if (flashes >= 4) {
+								clearInterval(interval);
+								mat.color.copy(originalColor);
+							}
+						}, 20);
+					}
+				});
+			}
+		});
+	};
+
+	// Função para resgatar prêmio
+	const resgatarPremio = async () => {
+		if (!currentPrize) return;
+
+		try {
+			const localVisitor = localStorage.getItem("localizar_visitor");
+			if (!localVisitor) {
+				alert("Erro: Visitante não encontrado");
+				return;
+			}
+
+			const visitor = JSON.parse(localVisitor);
+
+			// 1. Registra prêmio resgatado
+			const { error: resgateError } = await supabase
+				.from("premios_resgatados")
+				.insert([
+					{
+						visitante_id: visitor.id,
+						recompensa_id: currentPrize.id,
+						resgatado_em: new Date().toISOString(),
+					},
+				]);
+
+			if (resgateError) throw resgateError;
+
+			// 2. Atualiza visitante
+			const { error: visitorError } = await supabase
+				.from("visitantes")
+				.update({ ganhou_premio: true })
+				.eq("id", visitor.id);
+
+			if (visitorError) throw visitorError;
+
+			// 3. Diminui estoque
+			const { error: estoqueError } = await supabase
+				.from("recompensas")
+				.update({ quantidade: currentPrize.quantidade - 1 })
+				.eq("id", currentPrize.id);
+
+			if (estoqueError) throw estoqueError;
+
+			// 4. Atualiza localStorage
+			const updatedVisitor = { ...visitor, ganhou_premio: true };
+			localStorage.setItem("localizar_visitor", JSON.stringify(updatedVisitor));
+
+			alert("🎉 Prêmio resgatado com sucesso! Apresente seu cadastro no balcão.");
+			setShowPrizeModal(false);
+			setCurrentPrize(null);
+
+			// Recarrega prêmios disponíveis
+			loadAvailablePrizes();
+		} catch (err) {
+			console.error("Erro ao resgatar prêmio:", err);
+			alert("Erro ao resgatar prêmio. Tente novamente ou procure um organizador.");
+		}
+	};
+
+	const startFlipAnimation = (
+		object3D,
+		{ axis = "y", degree = Math.PI, duration = 600 } = {}
+	) => {
 		if (!object3D) return;
 		const start = object3D.rotation[axis];
 		const target = start + degree;
@@ -288,14 +390,13 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 				pontoSelecionado.pos_y,
 				pontoSelecionado.pos_z
 			);
-	
+
 			if (pontoReferencia.arPosition) {
 				posicaoAbsoluta.add(pontoReferencia.arPosition.clone());
 			}
-	
+
 			criarModeloCarregado(posicaoAbsoluta, pontoSelecionado);
 		}
-
 	};
 
 	const criarModeloCarregado = (posicao, dadosPonto) => {
@@ -470,7 +571,7 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 			/>
 
 			{showPrizeModal && currentPrize && (
-				<div 
+				<div
 					style={{
 						position: "fixed",
 						top: 0,
@@ -482,10 +583,10 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 						justifyContent: "center",
 						alignItems: "center",
 						zIndex: 1000,
-						padding: "20px"
+						padding: "20px",
 					}}
 				>
-					<div 
+					<div
 						style={{
 							backgroundColor: "#1e1e1e",
 							border: `3px solid ${rarityColors[currentPrize.rarity]}`,
@@ -497,124 +598,165 @@ function ARView({ calibrado, pontoReferencia, pontoSelecionado, pontosDisponivei
 							color: "#fff",
 							boxShadow: `0 8px 32px ${rarityColors[currentPrize.rarity]}40`,
 							position: "relative",
-							overflow: "hidden"
+							overflow: "hidden",
 						}}
 					>
-						{(currentPrize.rarity === "Épico" || currentPrize.rarity === "Lendário") && (
-							<div style={{
-								position: "absolute",
-								top: "-50%",
-								left: "-50%",
-								width: "200%",
-								height: "200%",
-								background: `conic-gradient(from 0deg, transparent, ${rarityColors[currentPrize.rarity]}30, transparent)`,
-								animation: "rotate 3s linear infinite",
-								pointerEvents: "none"
-							}} />
+						{(currentPrize.rarity === "Raro" || currentPrize.rarity === "Ultra-Raro") && (
+							<div
+								style={{
+									position: "absolute",
+									top: "-50%",
+									left: "-50%",
+									width: "200%",
+									height: "200%",
+									background: `conic-gradient(from 0deg, transparent, ${
+										rarityColors[currentPrize.rarity]
+									}30, transparent)`,
+									animation: "rotate 3s linear infinite",
+									pointerEvents: "none",
+								}}
+							/>
 						)}
-						
-						<div style={{
-							position: "absolute",
-							top: "15px",
-							right: "15px",
-							backgroundColor: rarityColors[currentPrize.rarity],
-							color: "#000",
-							padding: "4px 12px",
-							borderRadius: "20px",
-							fontSize: "12px",
-							fontWeight: "bold",
-							textTransform: "uppercase",
-							zIndex: 1
-						}}>
+
+						<div
+							style={{
+								position: "absolute",
+								top: "15px",
+								right: "15px",
+								backgroundColor: rarityColors[currentPrize.rarity],
+								color: "#000",
+								padding: "4px 12px",
+								borderRadius: "20px",
+								fontSize: "12px",
+								fontWeight: "bold",
+								textTransform: "uppercase",
+								zIndex: 1,
+							}}
+						>
 							{currentPrize.rarity}
 						</div>
-						
-						<div style={{ fontSize: "70px", marginBottom: "15px", zIndex: 1, position: "relative" }}>
+
+						<div
+							style={{
+								fontSize: "70px",
+								marginBottom: "15px",
+								zIndex: 1,
+								position: "relative",
+							}}
+						>
 							🎉
 						</div>
-						
-						<h2 style={{ 
-							color: rarityColors[currentPrize.rarity], 
-							marginBottom: "15px",
-							fontSize: "26px",
-							zIndex: 1,
-							position: "relative"
-						}}>
-							{currentPrize.rarity === "Ultra-Raro" ? "INCRÍVEL!" : 
-							 currentPrize.rarity === "Raro" ? "PARABÉNS!" : "Você ganhou!"}
+
+						<h2
+							style={{
+								color: rarityColors[currentPrize.rarity],
+								marginBottom: "15px",
+								fontSize: "26px",
+								zIndex: 1,
+								position: "relative",
+							}}
+						>
+							{currentPrize.rarity === "Ultra-Raro"
+								? "INCRÍVEL!"
+								: currentPrize.rarity === "Raro"
+								? "PARABÉNS!"
+								: "Você ganhou!"}
 						</h2>
-						
-						<div style={{ 
-							fontSize: "30px", 
-							marginBottom: "5px",
-							zIndex: 1,
-							position: "relative"
-						}}>
-							<img src={currentPrize.urlImg} alt="" style={{height: "150px"}}/>
+
+						<div
+							style={{
+								fontSize: "30px",
+								marginBottom: "5px",
+								zIndex: 1,
+								position: "relative",
+							}}
+						>
+							<img src={currentPrize.url_imagem} alt="" style={{ height: "150px" }} />
 						</div>
-						
-						<h3 style={{ 
-							color: "#fff", 
-							marginBottom: "12px",
-							fontSize: "22px",
-							zIndex: 1,
-							position: "relative"
-						}}>
-							{currentPrize.name}
+
+						<h3
+							style={{
+								color: "#fff",
+								marginBottom: "12px",
+								fontSize: "22px",
+								zIndex: 1,
+								position: "relative",
+							}}
+						>
+							{currentPrize.nome}
 						</h3>
-						
-						<p style={{ 
-							color: "#a0a0a0", 
-							marginBottom: "25px",
-							lineHeight: "1.5",
-							zIndex: 1,
-							position: "relative"
-						}}>
-							{currentPrize.description}<br/>
+
+						<p
+							style={{
+								color: "#a0a0a0",
+								marginBottom: "25px",
+								lineHeight: "1.5",
+								zIndex: 1,
+								position: "relative",
+							}}
+						>
+							{currentPrize.descricao}
+							<br />
 							Tire um print dessa tela!
 						</p>
 
-						<div style={{
-							backgroundColor: "rgba(0, 0, 0, 0.3)",
-							padding: "10px",
-							borderRadius: "8px",
-							marginBottom: "25px",
-							fontSize: "14px",
-							color: "#888",
-							zIndex: 1,
-							position: "relative"
-						}}>
+						<div
+							style={{
+								backgroundColor: "rgba(0, 0, 0, 0.3)",
+								padding: "10px",
+								borderRadius: "8px",
+								marginBottom: "25px",
+								fontSize: "14px",
+								color: "#888",
+								zIndex: 1,
+								position: "relative",
+							}}
+						>
 							{currentPrize.rarity === "Ultra-Raro" && "Chance: 15% - Extremamente raro! 💎"}
 							{currentPrize.rarity === "Raro" && "Chance: 35% - Raro! 🔮"}
 							{currentPrize.rarity === "Comum" && "Chance: 50% - Comum 📋"}
 						</div>
-						
-						<button
-							onClick={closePrizeModal}
-							style={{
-								backgroundColor: rarityColors[currentPrize.rarity],
-								color: "#000",
-								border: "none",
-								padding: "14px 35px",
-								borderRadius: "10px",
-								fontSize: "16px",
-								fontWeight: "bold",
-								cursor: "pointer",
-								transition: "all 0.3s ease",
-								textTransform: "uppercase",
-								zIndex: 1,
-								position: "relative"
-							}}
-							onMouseOver={(e) => {
-								e.target.style.transform = "scale(1.05)";
-								e.target.style.boxShadow = `0 4px 20px ${rarityColors[currentPrize.rarity]}60`;
-							}}
-							onMouseOut={(e) => {
-								e.target.style.transform = "scale(1)";
-								e.target.style.boxShadow = "none";
-							}}>
-							Resgatar prêmio
-						</button>
+
+						<div style={{ display: "flex", gap: "10px" }}>
+							<button
+								onClick={closePrizeModal}
+								style={{
+									flex: 1,
+									backgroundColor: "transparent",
+									border: "2px solid #666",
+									color: "#888",
+									padding: "14px 20px",
+									borderRadius: "10px",
+									fontSize: "16px",
+									fontWeight: "bold",
+									cursor: "pointer",
+									transition: "all 0.3s ease",
+								}}
+							>
+								Cancelar
+							</button>
+
+							<button
+								onClick={resgatarPremio}
+								style={{
+									flex: 2,
+									backgroundColor: rarityColors[currentPrize.rarity],
+									color: "#000",
+									border: "none",
+									padding: "14px 35px",
+									borderRadius: "10px",
+									fontSize: "16px",
+									fontWeight: "bold",
+									cursor: "pointer",
+									transition: "all 0.3s ease",
+									textTransform: "uppercase",
+									zIndex: 1,
+									position: "relative",
+								}}
+							>
+								Resgatar Prêmio
+							</button>
+						</div>
 					</div>
 				</div>
 			)}
