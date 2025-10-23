@@ -79,9 +79,6 @@ function ARView({
 			.single();
 
 		if (visitorError || visitorData?.ganhou_premio) {
-			alert(
-				"Você já resgatou seu prêmio! Cada visitante pode ganhar apenas uma vez."
-			);
 			return null;
 		}
 
@@ -336,7 +333,7 @@ function ARView({
 			const updatedVisitor = { ...visitor, ganhou_premio: true };
 			localStorage.setItem("localizar_visitor", JSON.stringify(updatedVisitor));
 
-			alert("🎉 Prêmio resgatado com sucesso! Apresente seu cadastro no balcão.");
+			alert("🎉 Prêmio resgatado com sucesso! Apresente seu print no nosso stand.");
 			setShowPrizeModal(false);
 			setCurrentPrize(null);
 
@@ -699,7 +696,7 @@ function ARView({
 						>
 							{currentPrize.descricao}
 							<br />
-							Tire um print dessa tela!
+							<strong>Tire um print dessa tela!</strong>
 						</p>
 
 						<div

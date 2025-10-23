@@ -264,7 +264,8 @@ function UserScreen({
 						{!visitante?.ganhou_premio && (
 							<div className="prize-tip">
 								<i className="fa-solid fa-lightbulb"></i>
-								<span>Dica: Clique 3 vezes em um ponto AR para ganhar prêmios!</span>
+								<span>Dica: Clique 3 vezes em um ponto AR para ganhar prêmios! 
+									Você só saberá qual prêmio ganhou quando sair do modo AR.</span>
 							</div>
 						)}
 
