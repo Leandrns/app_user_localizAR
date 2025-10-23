@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import QRScanner from "./QRScanner";
 import ARView from "./ARView";
 import VisitorRegistration from "./VisitorRegistration";
@@ -160,19 +160,19 @@ function UserScreen({
 						<div className="visitor-badge">
 							<i className="fa-solid fa-user-check"></i>
 							<div>
-								<strong>{visitante.current.nome.split(" ")[0]}</strong>
-								<span>{visitante.current.telefone}</span>
+								<strong>{visitante.nome.split(" ")[0]}</strong>
+								<span>{visitante.telefone}</span>
 							</div>
 						</div>
 
 						<div
-							className={`prize-status ${visitante.current.ganhou_premio ? "won" : "available"}`}
+							className={`prize-status ${visitante.ganhou_premio ? "won" : "available"}`}
 						>
 							<i
-								className={visitante.current.ganhou_premio ? "fa-solid fa-trophy" : "fa-solid fa-gift"}
+								className={visitante.ganhou_premio ? "fa-solid fa-trophy" : "fa-solid fa-gift"}
 							></i>
 							<span>
-								{visitante.current.ganhou_premio ? "Prêmio já resgatado" : "Prêmio disponível"}
+								{visitante.ganhou_premio ? "Prêmio já resgatado" : "Prêmio disponível"}
 							</span>
 						</div>
 					</section>
@@ -261,7 +261,7 @@ function UserScreen({
 								: "Selecione um ponto de interesse acima para começar."}
 						</p>
 
-						{!visitante.current?.ganhou_premio && (
+						{!visitante?.ganhou_premio && (
 							<div className="prize-tip">
 								<i className="fa-solid fa-lightbulb"></i>
 								<span>Dica: Clique 3 vezes em um ponto AR para ganhar prêmios!</span>
@@ -284,7 +284,7 @@ function UserScreen({
 				)}
 			</main>
 
-			{showAR && calibrado && pontoSelecionado && visitante.current && (
+			{showAR && calibrado && pontoSelecionado && visitante && (
 				<ARView
 					mode="user"
 					calibrado={calibrado}
