@@ -26,7 +26,7 @@ function ARView({
 
 	const [showPrizeModal, setShowPrizeModal] = useState(false);
 	const [currentPrize, setCurrentPrize] = useState(null);
-	const availablePrizes = useRef("vazio");
+	const availablePrizes = useRef([]);
 	const clickCounterRef = useRef(new Map());
 
 	useEffect(() => {
@@ -55,7 +55,6 @@ function ARView({
 				throw error;
 			}
 			availablePrizes.current = data || [];
-			alert(availablePrizes.current)
 		} catch (err) {
 			console.error("Erro ao carregar prêmios:", err);
 		}
@@ -87,7 +86,7 @@ function ARView({
 		}
 
 		// 3. Filtra prêmios com estoque
-		const disponiveis = availablePrizes.filter((r) => r.quantidade > 0);
+		const disponiveis = availablePrizes.current.filter((r) => r.quantidade > 0);
 		if (disponiveis.length === 0) {
 			alert("Não há mais prêmios disponíveis no momento 😢");
 			return null;
