@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import QRScanner from "./QRScanner";
 import ARView from "./ARView";
 import VisitorRegistration from "./VisitorRegistration";
@@ -15,7 +15,7 @@ function UserScreen({
 	const [showQRScanner, setShowQRScanner] = useState(false);
 	const [showAR, setShowAR] = useState(false);
 	const [showRegistration, setShowRegistration] = useState(false);
-	const visitante = useRef(null);
+	const [visitante, setVisitante] = useState(null);
 	const [pontosDisponiveis, setPontosDisponiveis] = useState([]);
 	const [pontoSelecionado, setPontoSelecionado] = useState(null);
 	const [loadingPontos, setLoadingPontos] = useState(false);
@@ -47,7 +47,7 @@ function UserScreen({
 					.maybeSingle();
 
 				if (data) {
-					visitante.current = data;
+					setVisitante(data);
 					console.log("✅ Visitante encontrado:", data);
 				} else {
 					// Dados locais inválidos, pede novo cadastro
@@ -64,7 +64,7 @@ function UserScreen({
 	};
 
 	const handleRegistrationComplete = (visitor) => {
-		visitante.current = visitor;
+		setVisitante(visitor);
 		setShowRegistration(false);
 		console.log("✅ Cadastro completo:", visitor);
 	};
@@ -116,7 +116,7 @@ function UserScreen({
 			return;
 		}
 
-		if (!visitante.current) {
+		if (!visitante) {
 			alert("Você precisa estar cadastrado para usar o AR!");
 			setShowRegistration(true);
 			return;
@@ -155,24 +155,24 @@ function UserScreen({
 				</header>
 
 				{/* Informações do Visitante */}
-				{visitante.current && (
+				{visitante && (
 					<section className="visitor-info">
 						<div className="visitor-badge">
 							<i className="fa-solid fa-user-check"></i>
 							<div>
-								<strong>{visitante.current.nome.split(" ")[0]}</strong>
-								<span>{visitante.current.telefone}</span>
+								<strong>{visitante.nome.split(" ")[0]}</strong>
+								<span>{visitante.telefone}</span>
 							</div>
 						</div>
 
 						<div
-							className={`prize-status ${visitante.current.ganhou_premio ? "won" : "available"}`}
+							className={`prize-status ${visitante.ganhou_premio ? "won" : "available"}`}
 						>
 							<i
-								className={visitante.current.ganhou_premio ? "fa-solid fa-trophy" : "fa-solid fa-gift"}
+								className={visitante.ganhou_premio ? "fa-solid fa-trophy" : "fa-solid fa-gift"}
 							></i>
 							<span>
-								{visitante.current.ganhou_premio ? "Prêmio já resgatado" : "Prêmio disponível"}
+								{visitante.ganhou_premio ? "Prêmio já resgatado" : "Prêmio disponível"}
 							</span>
 						</div>
 					</section>
@@ -261,7 +261,7 @@ function UserScreen({
 								: "Selecione um ponto de interesse acima para começar."}
 						</p>
 
-						{!visitante.current?.ganhou_premio && (
+						{!visitante?.ganhou_premio && (
 							<div className="prize-tip">
 								<i className="fa-solid fa-lightbulb"></i>
 								<span>Dica: Clique 3 vezes em um ponto AR para ganhar prêmios!</span>
@@ -284,7 +284,7 @@ function UserScreen({
 				)}
 			</main>
 
-			{showAR && calibrado && pontoSelecionado && visitante.current && (
+			{showAR && calibrado && pontoSelecionado && visitante && (
 				<ARView
 					mode="user"
 					calibrado={calibrado}
