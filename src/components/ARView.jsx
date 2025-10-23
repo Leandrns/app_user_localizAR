@@ -26,7 +26,7 @@ function ARView({
 
 	const [showPrizeModal, setShowPrizeModal] = useState(false);
 	const [currentPrize, setCurrentPrize] = useState(null);
-	const availablePrizes = useRef(["vazio"]);
+	const availablePrizes = useRef("vazio");
 	const clickCounterRef = useRef(new Map());
 
 	useEffect(() => {
@@ -55,7 +55,7 @@ function ARView({
 				throw error;
 			}
 			availablePrizes.current = data || [];
-			alert(availablePrizes)
+			alert(availablePrizes.current)
 		} catch (err) {
 			console.error("Erro ao carregar prêmios:", err);
 		}
