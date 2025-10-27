@@ -187,9 +187,9 @@ function ARView({
 	};
 
 	const onSessionEnd = () => {
+		limparObjetosAR();
 		hitTestSourceRef.current = null;
 		localReferenceSpaceRef.current = null;
-		cleanup();
 		flipAnimationsRef.current = [];
 		lastTimestampRef.current = 0;
 		selectableObjectsRef.current = [];
