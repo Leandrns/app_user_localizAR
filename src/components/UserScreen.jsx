@@ -154,13 +154,6 @@ function UserScreen({
 					</button>
 				</header>
 
-				<div className="info-group">
-					<div className="info-item">
-						<span>Evento: </span>
-						<strong>{pontoReferencia.qrCode}</strong>
-					</div>
-				</div>
-
 				{/* Informações do Visitante */}
 				{visitante && (
 					<section className="visitor-info">
@@ -206,6 +199,13 @@ function UserScreen({
 						{/* <div className="status-badge calibrado">
 							<i className="fa-solid fa-check"></i> Sistema Calibrado
 						</div> */}
+
+						<div className="info-group">
+							<div className="info-item">
+								<span>Evento: </span>
+								<strong>{pontoReferencia.qrCode}</strong>
+							</div>
+						</div>
 
 						{/* Seleção de Ponto */}
 						<div className="point-selection">
@@ -264,8 +264,10 @@ function UserScreen({
 						{!visitante?.ganhou_premio && (
 							<div className="prize-tip">
 								<i className="fa-solid fa-lightbulb"></i>
-								<span>Dica: Clique 3 vezes em um ponto AR para ganhar prêmios! 
-									Você só saberá qual prêmio ganhou quando sair do modo AR.</span>
+								<span>
+									Dica: Clique 3 vezes em um ponto AR para ganhar prêmios! Você só saberá qual
+									prêmio ganhou quando sair do modo AR.
+								</span>
 							</div>
 						)}
 
