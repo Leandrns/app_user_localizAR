@@ -248,12 +248,12 @@ function UserScreen({
 							)}
 						</div>
 
-						{pontoSelecionado && (
+						{/* {pontoSelecionado && (
 							<div className="selected-point-info">
 								<i className="fa-solid fa-check-circle"></i>
 								Ponto selecionado: <strong>{pontoSelecionado?.nome || pontoSelecionado}</strong>
 							</div>
-						)}
+						)} */}
 
 						<p className="instructions">
 							{pontoSelecionado
