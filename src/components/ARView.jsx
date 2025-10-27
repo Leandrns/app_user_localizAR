@@ -711,9 +711,9 @@ function ARView({
 								position: "relative",
 							}}
 						>
-							{currentPrize.rarity === "Ultra-Raro" && "Chance: 15% - Extremamente raro! 💎"}
-							{currentPrize.rarity === "Raro" && "Chance: 35% - Raro! 🔮"}
-							{currentPrize.rarity === "Comum" && "Chance: 50% - Comum 📋"}
+							{currentPrize.rarity === "Ultra-Raro" && "Chance: " + currentPrize.probability + " - Extremamente raro! 💎"}
+							{currentPrize.rarity === "Raro" && "Chance: " + currentPrize.probability + " - Raro! 🔮"}
+							{currentPrize.rarity === "Comum" && "Chance: " + currentPrize.probability + " - Comum 📋"}
 						</div>
 
 						<div style={{ display: "flex", gap: "10px" }}>
