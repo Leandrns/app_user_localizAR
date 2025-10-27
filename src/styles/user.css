@@ -350,7 +350,8 @@ html, body, #root {
 
 .visitor-badge div {
     display: flex;
-    gap: 25px;
+    align-items: center;
+    gap: 20px;
 }
 
 .visitor-badge strong {
