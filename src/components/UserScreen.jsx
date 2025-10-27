@@ -154,6 +154,13 @@ function UserScreen({
 					</button>
 				</header>
 
+				<div className="info-group">
+					<div className="info-item">
+						<span>Evento: </span>
+						<strong>{pontoReferencia.qrCode}</strong>
+					</div>
+				</div>
+
 				{/* Informações do Visitante */}
 				{visitante && (
 					<section className="visitor-info">
@@ -196,16 +203,9 @@ function UserScreen({
 					</section>
 				) : (
 					<section className="user-card-body calibration-done">
-						<div className="status-badge calibrado">
+						{/* <div className="status-badge calibrado">
 							<i className="fa-solid fa-check"></i> Sistema Calibrado
-						</div>
-
-						<div className="info-group">
-							<div className="info-item">
-								<span>Evento: </span>
-								<strong>{pontoReferencia.qrCode}</strong>
-							</div>
-						</div>
+						</div> */}
 
 						{/* Seleção de Ponto */}
 						<div className="point-selection">
@@ -278,7 +278,7 @@ function UserScreen({
 								onClick={handleIniciarAR}
 								disabled={!pontoSelecionado || pontosDisponiveis.length === 0}
 							>
-								<i className="fa-solid fa-eye"></i> Start AR
+								<i className="fa-solid fa-eye"></i> Modo AR
 							</button>
 						</div>
 					</section>
