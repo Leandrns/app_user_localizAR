@@ -805,7 +805,7 @@ function ARView({
 						</div>
 
 						<div style={{ display: "flex", gap: "10px" }}>
-							<button
+							{/* <button
 								onClick={closePrizeModal}
 								style={{
 									flex: 1,
@@ -821,7 +821,7 @@ function ARView({
 								}}
 							>
 								Cancelar
-							</button>
+							</button> */}
 
 							<button
 								onClick={resgatarPremio}
