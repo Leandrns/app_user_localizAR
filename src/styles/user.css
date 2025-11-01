@@ -19,6 +19,7 @@ html, body, #root {
     min-height: 100vh;
     background-image: linear-gradient(0deg,#0e0e0e 10%, #4ecdc4 100%);
     padding: 1rem;
+    padding-top: 50px;
     font-family: sans-serif;
 }
 
@@ -283,10 +284,6 @@ html, body, #root {
 
 /* Responsividade */
 @media (max-width: 400px) {
-    .action-buttons {
-        flex-direction: column;
-    }
-    
     .point-selection {
         padding: 1rem;
     }
