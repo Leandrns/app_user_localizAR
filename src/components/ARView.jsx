@@ -215,6 +215,23 @@ function ARView({
 		const arButton = ARButton.createButton(renderer, {
 			requiredFeatures: ["hit-test"],
 		});
+
+		// Aplica z-index e estilos personalizados ao botão AR
+		arButton.style.zIndex = "9999";
+		arButton.style.position = "fixed";
+		arButton.style.bottom = "20px";
+		arButton.style.left = "50%";
+		arButton.style.transform = "translateX(-50%)";
+		arButton.style.padding = "12px 24px";
+		arButton.style.fontSize = "16px";
+		arButton.style.fontWeight = "bold";
+		arButton.style.backgroundColor = "#4ecdc4";
+		arButton.style.color = "#000";
+		arButton.style.border = "none";
+		arButton.style.borderRadius = "12px";
+		arButton.style.cursor = "pointer";
+		arButton.style.boxShadow = "0 4px 15px rgba(78, 205, 196, 0.4)";
+		arButton.style.fontFamily = "Lexend, Arial, sans-serif";
 		container.appendChild(arButton);
 
 		const controller = renderer.xr.getController(0);
