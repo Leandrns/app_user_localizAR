@@ -16,7 +16,6 @@ html, body, #root {
 .user-container {
     display: flex;
     justify-content: center;
-    align-items: center;
     min-height: 100vh;
     background-image: linear-gradient(0deg,#0e0e0e 10%, #4ecdc4 100%);
     padding: 1rem;
@@ -25,9 +24,7 @@ html, body, #root {
 
 .user-card {
     width: 100%;
-    max-width: 420px; 
-    max-height: 80vh;
-    top: 0px;
+    height: fit-content;
     z-index: 100;
     background-color: #1e1e1e;
     color: #e0e0e0;
@@ -55,6 +52,7 @@ html, body, #root {
     padding: 1.25rem;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 1rem;
     text-align: center;
 }

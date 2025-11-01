@@ -153,7 +153,6 @@ function UserScreen({
 						<i className="fa-solid fa-arrow-left"></i> Voltar
 					</button>
 				</header>
-
 				{/* Informações do Visitante */}
 				{visitante && (
 					<section className="visitor-info">
