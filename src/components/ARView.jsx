@@ -39,7 +39,6 @@ function ARView({
 		};
 	}, [calibrado, pontoSelecionado]);
 
-	// Carrega prêmios disponíveis do Supabase
 	useEffect(() => {
 		loadAvailablePrizes();
 	}, []);
@@ -60,9 +59,7 @@ function ARView({
 		}
 	};
 
-	// Sistema de prêmios melhorado
 	const generatePrizeByProbability = async () => {
-		// 1. Verifica se visitante já ganhou prêmio
 		const localVisitor = localStorage.getItem("localizar_visitor");
 		if (!localVisitor) {
 			alert("Você precisa estar cadastrado para ganhar prêmios!");
@@ -71,7 +68,6 @@ function ARView({
 
 		const visitor = JSON.parse(localVisitor);
 
-		// 2. Verifica no Supabase se já ganhou
 		const { data: visitorData, error: visitorError } = await supabase
 			.from("visitantes")
 			.select("ganhou_premio")
@@ -82,14 +78,12 @@ function ARView({
 			return null;
 		}
 
-		// 3. Filtra prêmios com estoque
 		const disponiveis = availablePrizes.current.filter((r) => r.quantidade > 0);
 		if (disponiveis.length === 0) {
 			alert("Não há mais prêmios disponíveis no momento 😢");
 			return null;
 		}
 
-		// 4. Sorteia baseado em probabilidade
 		const random = Math.random();
 		let cumulative = 0;
 		const totalProb = disponiveis.reduce((sum, r) => sum + r.probability, 0);
@@ -110,6 +104,51 @@ function ARView({
 		"Ultra-Raro": "#f1c40f",
 	};
 
+	// ===== FUNÇÃO PARA CRIAR LABEL DE TEXTO 3D =====
+	const createTextLabel = (text, position) => {
+		// Cria um canvas para desenhar o texto
+		const canvas = document.createElement('canvas');
+		const context = canvas.getContext('2d');
+		
+		// Dimensões do canvas
+		canvas.width = 512;
+		canvas.height = 128;
+		
+		// Estilo do texto
+		context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		
+		context.font = 'Bold 48px Lexend, Arial, sans-serif';
+		context.fillStyle = '#ffffff';
+		context.textAlign = 'center';
+		context.textBaseline = 'middle';
+		
+		// Desenha o texto
+		context.fillText(text, canvas.width / 2, canvas.height / 2);
+		
+		// Cria textura do canvas
+		const texture = new THREE.CanvasTexture(canvas);
+		texture.needsUpdate = true;
+		
+		// Cria material sprite
+		const spriteMaterial = new THREE.SpriteMaterial({ 
+			map: texture,
+			transparent: true,
+			depthTest: false, // Sempre visível por cima de outros objetos
+			depthWrite: false
+		});
+		
+		const sprite = new THREE.Sprite(spriteMaterial);
+		
+		// Escala do sprite (proporção do canvas)
+		sprite.scale.set(0.5, 0.125, 1);
+		
+		// Posiciona acima do marcador
+		sprite.position.copy(position);
+		sprite.position.y += 0.3; // 30cm acima do marcador
+		
+		return sprite;
+	};
 
 	const initAR = () => {
 		const container = containerRef.current;
@@ -227,15 +266,12 @@ function ARView({
 			const newClickCount = currentClicks + 1;
 			clickCounterRef.current.set(objectId, newClickCount);
 
-			// Animação de flip
 			startFlipAnimation(root, { axis: "y", degree: 2 * Math.PI, duration: 600 });
 
 			if (newClickCount >= 3) {
-				// Efeito visual de blink
 				applyBlinkSmooth(root);
 				clickCounterRef.current.set(objectId, 0);
 
-				// Sorteia prêmio
 				const prize = await generatePrizeByProbability();
 
 				if (prize) {
@@ -287,7 +323,6 @@ function ARView({
 		});
 	};
 
-	// Função para resgatar prêmio
 	const resgatarPremio = async () => {
 		if (!currentPrize) return;
 
@@ -300,7 +335,6 @@ function ARView({
 
 			const visitor = JSON.parse(localVisitor);
 
-			// 1. Registra prêmio resgatado
 			const { error: resgateError } = await supabase
 				.from("premios_resgatados")
 				.insert([
@@ -313,7 +347,6 @@ function ARView({
 
 			if (resgateError) throw resgateError;
 
-			// 2. Atualiza visitante
 			const { error: visitorError } = await supabase
 				.from("visitantes")
 				.update({ ganhou_premio: true })
@@ -321,7 +354,6 @@ function ARView({
 
 			if (visitorError) throw visitorError;
 
-			// 3. Diminui estoque
 			const { error: estoqueError } = await supabase
 				.from("recompensas")
 				.update({ quantidade: currentPrize.quantidade - 1 })
@@ -329,7 +361,6 @@ function ARView({
 
 			if (estoqueError) throw estoqueError;
 
-			// 4. Atualiza localStorage
 			const updatedVisitor = { ...visitor, ganhou_premio: true };
 			localStorage.setItem("localizar_visitor", JSON.stringify(updatedVisitor));
 
@@ -337,7 +368,6 @@ function ARView({
 			setShowPrizeModal(false);
 			setCurrentPrize(null);
 
-			// Recarrega prêmios disponíveis
 			loadAvailablePrizes();
 		} catch (err) {
 			console.error("Erro ao resgatar prêmio:", err);
@@ -366,7 +396,6 @@ function ARView({
 		return t * (2 - t);
 	};
 
-	// MODIFICAÇÃO PRINCIPAL: Carrega apenas o ponto selecionado
 	const carregarPontoSelecionado = () => {
 		if (!calibrado || !pontoReferencia || !pontoSelecionado) return;
 
@@ -412,7 +441,7 @@ function ARView({
 					dadosOriginais: dadosPonto,
 				};
 
-				const cor = new THREE.Color().setHSL(0.3, 0.8, 0.5); // Cor verde para destaque
+				const cor = new THREE.Color().setHSL(0.3, 0.8, 0.5);
 
 				model.traverse((child) => {
 					if (child.isMesh) {
@@ -423,6 +452,11 @@ function ARView({
 
 				sceneRef.current.add(model);
 				selectableObjectsRef.current.push(model);
+
+				// ===== ADICIONA LABEL DE TEXTO =====
+				const labelPosition = model.position.clone();
+				const textLabel = createTextLabel(dadosPonto.nome, labelPosition);
+				sceneRef.current.add(textLabel);
 			},
 			undefined,
 			(error) => {
@@ -448,6 +482,11 @@ function ARView({
 
 		sceneRef.current.add(cube);
 		selectableObjectsRef.current.push(cube);
+
+		// ===== ADICIONA LABEL DE TEXTO PARA O CUBO TAMBÉM =====
+		const labelPosition = cube.position.clone();
+		const textLabel = createTextLabel(dadosPonto.nome, labelPosition);
+		sceneRef.current.add(textLabel);
 	};
 
 	const limparObjetosAR = () => {
@@ -459,6 +498,10 @@ function ARView({
 				child.isMesh &&
 				(child.geometry?.type === "BoxGeometry" || child.userData?.carregado)
 			) {
+				objetosParaRemover.push(child);
+			}
+			// Remove sprites (labels de texto)
+			if (child instanceof THREE.Sprite) {
 				objetosParaRemover.push(child);
 			}
 		});
