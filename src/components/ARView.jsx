@@ -220,7 +220,7 @@ function ARView({
 		arButton.style.zIndex = "9999";
 		arButton.style.padding = "12px 24px";
 		arButton.style.fontSize = "16px";
-		arButton.style.width = "auto";
+		arButton.style.width = "200px";
 		arButton.style.fontWeight = "bold";
 		arButton.style.backgroundColor = "#4ecdc4";
 		arButton.style.color = "#000";
@@ -228,6 +228,7 @@ function ARView({
 		arButton.style.borderRadius = "12px";
 		arButton.style.boxShadow = "0 4px 15px rgba(78, 205, 196, 0.4)";
 		arButton.style.fontFamily = "Lexend, Arial, sans-serif";
+		arButton.style.opacity = "1";
 
 		container.appendChild(arButton);
 		container.style.zIndex = "9999";
