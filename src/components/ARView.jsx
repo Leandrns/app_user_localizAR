@@ -110,21 +110,49 @@ function ARView({
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d');
 		
-		// Dimensões do canvas
-		canvas.width = 512;
-		canvas.height = 128;
+		// Define a fonte ANTES de medir o texto
+		const fontSize = 48;
+		context.font = `Bold ${fontSize}px Lexend, Arial, sans-serif`;
 		
-		// Estilo do texto
-		context.fillStyle = 'rgba(0, 0, 0, 0.7)';
-		context.fillRect(0, 0, canvas.width, canvas.height);
+		// Mede a largura real do texto
+		const metrics = context.measureText(text);
+		const textWidth = metrics.width;
 		
-		context.font = 'Bold 48px Lexend, Arial, sans-serif';
-		context.fillStyle = '#ffffff';
+		// Adiciona padding horizontal (20% de cada lado)
+		const padding = textWidth * 0.4;
+		const canvasWidth = Math.ceil(textWidth + padding);
+		const canvasHeight = Math.ceil(fontSize * 2); // Altura = 2x o tamanho da fonte
+		
+		// Define as dimensões do canvas
+		canvas.width = canvasWidth;
+		canvas.height = canvasHeight;
+		
+		// IMPORTANTE: Redefinir a fonte após mudar o tamanho do canvas
+		context.font = `Bold ${fontSize}px Lexend, Arial, sans-serif`;
 		context.textAlign = 'center';
 		context.textBaseline = 'middle';
 		
+		// Desenha o fundo com bordas arredondadas
+		const borderRadius = 15;
+		context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+		
+		// Retângulo com bordas arredondadas
+		context.beginPath();
+		context.moveTo(borderRadius, 0);
+		context.lineTo(canvasWidth - borderRadius, 0);
+		context.quadraticCurveTo(canvasWidth, 0, canvasWidth, borderRadius);
+		context.lineTo(canvasWidth, canvasHeight - borderRadius);
+		context.quadraticCurveTo(canvasWidth, canvasHeight, canvasWidth - borderRadius, canvasHeight);
+		context.lineTo(borderRadius, canvasHeight);
+		context.quadraticCurveTo(0, canvasHeight, 0, canvasHeight - borderRadius);
+		context.lineTo(0, borderRadius);
+		context.quadraticCurveTo(0, 0, borderRadius, 0);
+		context.closePath();
+		context.fill();
+		
 		// Desenha o texto
-		context.fillText(text, canvas.width / 2, canvas.height / 2);
+		context.fillStyle = '#ffffff';
+		context.fillText(text, canvasWidth / 2, canvasHeight / 2);
 		
 		// Cria textura do canvas
 		const texture = new THREE.CanvasTexture(canvas);
@@ -140,12 +168,15 @@ function ARView({
 		
 		const sprite = new THREE.Sprite(spriteMaterial);
 		
-		// Escala do sprite (proporção do canvas)
-		sprite.scale.set(0.5, 0.125, 1);
+		// Calcula a escala proporcional do sprite
+		// Mantém a proporção do canvas
+		const aspectRatio = canvasWidth / canvasHeight;
+		const baseHeight = 0.15; // Altura base em metros
+		sprite.scale.set(baseHeight * aspectRatio, baseHeight, 1);
 		
 		// Posiciona acima do marcador
 		sprite.position.copy(position);
-		sprite.position.y += 0.4; // 40cm acima do marcador
+		sprite.position.y += 0.3; // 30cm acima do marcador
 		
 		return sprite;
 	};
