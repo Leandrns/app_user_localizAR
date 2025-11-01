@@ -216,10 +216,9 @@ function ARView({
 			requiredFeatures: ["hit-test"],
 		});
 
-		// Aplica z-index e estilos personalizados ao botão AR
-		arButton.style.zIndex = "9999";
-		arButton.style.padding = "12px 24px";
-		arButton.style.fontSize = "16px";
+		// estilos personalizados ao botão AR
+		arButton.style.padding = "12px";
+		arButton.style.fontSize = "13px";
 		arButton.style.width = "200px";
 		arButton.style.fontWeight = "bold";
 		arButton.style.backgroundColor = "#4ecdc4";
@@ -231,7 +230,6 @@ function ARView({
 		arButton.style.opacity = "1";
 
 		container.appendChild(arButton);
-		container.style.zIndex = "9999";
 
 		const controller = renderer.xr.getController(0);
 		controller.addEventListener("select", onSelect);

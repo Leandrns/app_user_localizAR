@@ -46,7 +46,7 @@ html, body, #root {
 
 .user-card-header h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     text-align: center;
 }
 
@@ -54,7 +54,7 @@ html, body, #root {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.2rem;
     text-align: center;
 }
 
