@@ -662,21 +662,6 @@ if (camera && pontoReferencia?.arPosition) {
 				}}
 			/>
 
-			{isARActive && showCompass && pontosDisponiveis.length > 0 && (
-  <Compass 
-    userPosition={userPosition}
-    targetPoints={pontosDisponiveis}
-    onPointSelect={handlePointSelect}
-  />
-)}
-
-// 5. Botão toggle da bússola
-{isARActive && (
-  <button onClick={() => setShowCompass(!showCompass)}>
-    <i className="fa-solid fa-compass"></i>
-  </button>
-)}
-
 			{showPrizeModal && currentPrize && (
 				<div
 					style={{
