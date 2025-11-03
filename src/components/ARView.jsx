@@ -643,40 +643,52 @@ function ARView({
 
 	return (
 		<>
-			{/* 🧭 BÚSSOLA - sobreposta ao canvas AR */}
-			{isARActive && showCompass && pontosDisponiveis.length > 0 && (
-				<Compass
-					userPosition={userPosition}
-					targetPoints={pontosDisponiveis}
-					onPointSelect={(p) => console.log("Ponto selecionado:", p)}
-				/>
-			)}
+			{/* Container AR (Canvas Three.js) */}
+			<div
+				ref={containerRef}
+				style={{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					width: "100%",
+					height: "100%",
+					zIndex: 1,
+				}}
+			>
+				{/* 🧭 BÚSSOLA - sobreposta ao canvas AR */}
+				{isARActive && showCompass && pontosDisponiveis.length > 0 && (
+					<Compass
+						userPosition={userPosition}
+						targetPoints={pontosDisponiveis}
+						onPointSelect={(p) => console.log("Ponto selecionado:", p)}
+					/>
+				)}
 
-			{/* Botão flutuante para mostrar/ocultar a bússola */}
-			{isARActive && (
-				<button
-					onClick={() => setShowCompass(!showCompass)}
-					style={{
-						position: "fixed",
-						top: "20px",
-						right: "20px",
-						zIndex: 1002,
-						backgroundColor: showCompass ? "#4ecdc4" : "rgba(0,0,0,0.7)",
-						color: showCompass ? "#000" : "#4ecdc4",
-						border: "none",
-						borderRadius: "50%",
-						width: "50px",
-						height: "50px",
-						fontSize: "20px",
-						boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-						cursor: "pointer",
-						transition: "all 0.3s ease",
-					}}
-				>
-					<i className="fa-solid fa-compass"></i>
-				</button>
-			)}
-
+				{/* Botão flutuante para mostrar/ocultar a bússola */}
+				{isARActive && (
+					<button
+						onClick={() => setShowCompass(!showCompass)}
+						style={{
+							position: "fixed",
+							top: "20px",
+							right: "20px",
+							zIndex: 1002,
+							backgroundColor: showCompass ? "#4ecdc4" : "rgba(0,0,0,0.7)",
+							color: showCompass ? "#000" : "#4ecdc4",
+							border: "none",
+							borderRadius: "50%",
+							width: "50px",
+							height: "50px",
+							fontSize: "20px",
+							boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+							cursor: "pointer",
+							transition: "all 0.3s ease",
+						}}
+					>
+						<i className="fa-solid fa-compass"></i>
+					</button>
+				)}
+			</div>
 
 			{/* Modal de Prêmio */}
 			{showPrizeModal && currentPrize && (
