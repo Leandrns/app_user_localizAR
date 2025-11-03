@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { supabase } from "../supabaseClient";
-
+import Compass from "..components/Compass";
 function ARView({
 	calibrado,
 	pontoReferencia,
@@ -28,7 +28,8 @@ function ARView({
 	const [currentPrize, setCurrentPrize] = useState(null);
 	const availablePrizes = useRef([]);
 	const clickCounterRef = useRef(new Map());
-
+	const [userPosition, setUserPosition] = useState({ x: 0, y: 0, z: 0 });
+	const [showCompass, setShowCompass] = useState(true);
 	useEffect(() => {
 		if (calibrado && pontoSelecionado && containerRef.current) {
 			initAR();
@@ -595,6 +596,12 @@ function ARView({
 		const last = lastTimestampRef.current || timestamp;
 		const deltaMs = timestamp - last;
 		lastTimestampRef.current = timestamp;
+		
+		if (camera && pontoReferencia?.arPosition) {
+			const pos = camera.position.clone();
+			const relativePos = pos.sub(pontoReferencia.arPosition);
+			setUserPosition({ x: relativePos.x, y: relativePos.y, z: relativePos.z });
+		}
 
 		if (flipAnimationsRef.current.length > 0) {
 			const toRemove = [];
@@ -656,6 +663,19 @@ function ARView({
 					zIndex: 1,
 				}}
 			/>
+			{isARActive && showCompass && pontosDisponiveis.length > 0 && (
+			<Compass 
+				userPosition={userPosition}
+				targetPoints={pontosDisponiveis}
+				onPointSelect={handlePointSelect}
+			/>
+			)}
+
+			{isARActive && (
+			<button onClick={() => setShowCompass(!showCompass)}>
+				<i className="fa-solid fa-compass"></i>
+			</button>
+			)}
 
 			{showPrizeModal && currentPrize && (
 				<div
