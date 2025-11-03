@@ -28,8 +28,8 @@ function ARView({
 	const [currentPrize, setCurrentPrize] = useState(null);
 	const availablePrizes = useRef([]);
 	const clickCounterRef = useRef(new Map());
-const [userPosition, setUserPosition] = useState({ x: 0, y: 0, z: 0 });
-const [showCompass, setShowCompass] = useState(true);
+	const [userPosition, setUserPosition] = useState({ x: 0, y: 0, z: 0 });
+	const [showCompass, setShowCompass] = useState(true);
 
 	useEffect(() => {
 		if (calibrado && pontoSelecionado && containerRef.current) {
@@ -108,37 +108,29 @@ const [showCompass, setShowCompass] = useState(true);
 
 	// ===== FUNÇÃO PARA CRIAR LABEL DE TEXTO 3D =====
 	const createTextLabel = (text, position) => {
-		// Cria um canvas para desenhar o texto
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d');
 		
-		// Define a fonte ANTES de medir o texto
 		const fontSize = 48;
 		context.font = `Bold ${fontSize}px Lexend, Arial, sans-serif`;
 		
-		// Mede a largura real do texto
 		const metrics = context.measureText(text);
 		const textWidth = metrics.width;
 		
-		// Adiciona padding horizontal (20% de cada lado)
 		const padding = textWidth * 0.4;
 		const canvasWidth = Math.ceil(textWidth + padding);
-		const canvasHeight = Math.ceil(fontSize * 2); // Altura = 2x o tamanho da fonte
+		const canvasHeight = Math.ceil(fontSize * 2);
 		
-		// Define as dimensões do canvas
 		canvas.width = canvasWidth;
 		canvas.height = canvasHeight;
 		
-		// IMPORTANTE: Redefinir a fonte após mudar o tamanho do canvas
 		context.font = `Bold ${fontSize}px Lexend, Arial, sans-serif`;
 		context.textAlign = 'center';
 		context.textBaseline = 'middle';
 		
-		// Desenha o fundo com bordas arredondadas
 		const borderRadius = 15;
 		context.fillStyle = 'rgba(0, 0, 0, 0.7)';
 		
-		// Retângulo com bordas arredondadas
 		context.beginPath();
 		context.moveTo(borderRadius, 0);
 		context.lineTo(canvasWidth - borderRadius, 0);
@@ -152,33 +144,27 @@ const [showCompass, setShowCompass] = useState(true);
 		context.closePath();
 		context.fill();
 		
-		// Desenha o texto
 		context.fillStyle = '#ffffff';
 		context.fillText(text, canvasWidth / 2, canvasHeight / 2);
 		
-		// Cria textura do canvas
 		const texture = new THREE.CanvasTexture(canvas);
 		texture.needsUpdate = true;
 		
-		// Cria material sprite
 		const spriteMaterial = new THREE.SpriteMaterial({ 
 			map: texture,
 			transparent: true,
-			depthTest: false, // Sempre visível por cima de outros objetos
+			depthTest: false,
 			depthWrite: false
 		});
 		
 		const sprite = new THREE.Sprite(spriteMaterial);
 		
-		// Calcula a escala proporcional do sprite
-		// Mantém a proporção do canvas
 		const aspectRatio = canvasWidth / canvasHeight;
-		const baseHeight = 0.15; // Altura base em metros
+		const baseHeight = 0.15;
 		sprite.scale.set(baseHeight * aspectRatio, baseHeight, 1);
 		
-		// Posiciona acima do marcador
 		sprite.position.copy(position);
-		sprite.position.y += 0.4; // 40cm acima do marcador
+		sprite.position.y += 0.4;
 		
 		return sprite;
 	};
@@ -218,7 +204,6 @@ const [showCompass, setShowCompass] = useState(true);
 			requiredFeatures: ["hit-test"],
 		});
 
-		// estilos personalizados ao botão AR
 		arButton.style.padding = "12px";
 		arButton.style.fontSize = "13px";
 		arButton.style.width = "200px";
@@ -500,7 +485,6 @@ const [showCompass, setShowCompass] = useState(true);
 				sceneRef.current.add(model);
 				selectableObjectsRef.current.push(model);
 
-				// ===== ADICIONA LABEL DE TEXTO =====
 				const labelPosition = model.position.clone();
 				const textLabel = createTextLabel(dadosPonto.nome, labelPosition);
 				sceneRef.current.add(textLabel);
@@ -530,7 +514,6 @@ const [showCompass, setShowCompass] = useState(true);
 		sceneRef.current.add(cube);
 		selectableObjectsRef.current.push(cube);
 
-		// ===== ADICIONA LABEL DE TEXTO PARA O CUBO TAMBÉM =====
 		const labelPosition = cube.position.clone();
 		const textLabel = createTextLabel(dadosPonto.nome, labelPosition);
 		sceneRef.current.add(textLabel);
@@ -547,7 +530,6 @@ const [showCompass, setShowCompass] = useState(true);
 			) {
 				objetosParaRemover.push(child);
 			}
-			// Remove sprites (labels de texto)
 			if (child instanceof THREE.Sprite) {
 				objetosParaRemover.push(child);
 			}
@@ -597,11 +579,17 @@ const [showCompass, setShowCompass] = useState(true);
 		const last = lastTimestampRef.current || timestamp;
 		const deltaMs = timestamp - last;
 		lastTimestampRef.current = timestamp;
-if (camera && pontoReferencia?.arPosition) {
-  const pos = camera.position.clone();
-  const relativePos = pos.sub(pontoReferencia.arPosition);
-  setUserPosition({ x: relativePos.x, y: relativePos.y, z: relativePos.z });
-}
+
+		// Atualiza posição do usuário para a bússola
+		if (camera && pontoReferencia?.arPosition) {
+			const pos = camera.position.clone();
+			const relativePos = pos.sub(pontoReferencia.arPosition);
+			setUserPosition({ 
+				x: relativePos.x, 
+				y: relativePos.y, 
+				z: relativePos.z 
+			});
+		}
 
 		if (flipAnimationsRef.current.length > 0) {
 			const toRemove = [];
@@ -650,8 +638,16 @@ if (camera && pontoReferencia?.arPosition) {
 		setCurrentPrize(null);
 	};
 
+	const handlePointSelect = (point) => {
+		console.log('Ponto selecionado na bússola:', point);
+	};
+
+	// Verifica se sessão AR está ativa
+	const isARActive = rendererRef.current?.xr?.isPresenting;
+
 	return (
 		<>
+			{/* Container AR (Canvas Three.js) */}
 			<div
 				ref={containerRef}
 				style={{
@@ -662,22 +658,46 @@ if (camera && pontoReferencia?.arPosition) {
 					height: "100%",
 					zIndex: 1,
 				}}
-			/>
+			>
+				{/* Bússola AR - Sobreposta ao canvas quando AR estiver ativo */}
+				{isARActive && showCompass && pontosDisponiveis.length > 0 && (
+					<Compass 
+						userPosition={userPosition}
+						targetPoints={pontosDisponiveis}
+						onPointSelect={handlePointSelect}
+					/>
+				)}
 
-			{isARActive && showCompass && pontosDisponiveis.length > 0 && (
-  <Compass 
-    userPosition={userPosition}
-    targetPoints={pontosDisponiveis}
-    onPointSelect={handlePointSelect}
-  />
-)}
+				{/* Botão para toggle da bússola */}
+				{isARActive && (
+					<button
+						onClick={() => setShowCompass(!showCompass)}
+						style={{
+							position: 'fixed',
+							top: '20px',
+							right: '20px',
+							zIndex: 1002,
+							backgroundColor: showCompass ? 'rgba(78, 205, 196, 0.9)' : 'rgba(0, 0, 0, 0.7)',
+							color: showCompass ? '#000' : '#4ecdc4',
+							border: '2px solid #4ecdc4',
+							borderRadius: '50%',
+							width: '50px',
+							height: '50px',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							cursor: 'pointer',
+							fontSize: '20px',
+							boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+							transition: 'all 0.3s ease',
+						}}
+					>
+						<i className="fa-solid fa-compass"></i>
+					</button>
+				)}
+			</div>
 
-{isARActive && (
-  <button onClick={() => setShowCompass(!showCompass)}>
-    <i className="fa-solid fa-compass"></i>
-  </button>
-)}
-
+			{/* Modal de Prêmio */}
 			{showPrizeModal && currentPrize && (
 				<div
 					style={{
@@ -826,24 +846,6 @@ if (camera && pontoReferencia?.arPosition) {
 						</div>
 
 						<div style={{ display: "flex", gap: "10px" }}>
-							{/* <button
-								onClick={closePrizeModal}
-								style={{
-									flex: 1,
-									backgroundColor: "transparent",
-									border: "2px solid #666",
-									color: "#888",
-									padding: "14px 20px",
-									borderRadius: "10px",
-									fontSize: "16px",
-									fontWeight: "bold",
-									cursor: "pointer",
-									transition: "all 0.3s ease",
-								}}
-							>
-								Cancelar
-							</button> */}
-
 							<button
 								onClick={resgatarPremio}
 								style={{
