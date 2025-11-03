@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { ARButton } from "three/examples/jsm/webxr/ARButton.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { supabase } from "../supabaseClient";
-import Compass from "./compass";
+import Compass from "./Compass.jsx";
 function ARView({
 	calibrado,
 	pontoReferencia,
