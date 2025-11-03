@@ -1,0 +1,428 @@
+/* compass.css - Estilos da Bússola AR */
+
+.compass-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  pointer-events: none;
+}
+
+.compass-wrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-top: 20px;
+  pointer-events: all;
+}
+
+.compass-circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%);
+  border: 3px solid rgba(78, 205, 196, 0.5);
+  box-shadow: 0 0 30px rgba(78, 205, 196, 0.3),
+              inset 0 0 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.compass-mark {
+  position: absolute;
+  font-weight: bold;
+  font-size: 18px;
+  color: #4ecdc4;
+  text-shadow: 0 0 10px rgba(78, 205, 196, 0.8),
+               0 2px 4px rgba(0, 0, 0, 0.8);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compass-mark.north {
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  color: #ff4757;
+}
+
+.compass-mark.east {
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.compass-mark.south {
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compass-mark.west {
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.compass-tick {
+  position: absolute;
+  width: 2px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.4);
+  top: 5px;
+  left: 50%;
+  transform-origin: center 95px;
+}
+
+.compass-tick.major {
+  height: 15px;
+  width: 3px;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.compass-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(78, 205, 196, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%);
+  border: 2px solid rgba(78, 205, 196, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 0 20px rgba(78, 205, 196, 0.4);
+}
+
+.compass-needle {
+  position: relative;
+  width: 4px;
+  height: 40px;
+}
+
+.needle-north {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 20px solid #ff4757;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+  animation: pulse-needle 2s ease-in-out infinite;
+}
+
+@keyframes pulse-needle {
+  0%, 100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+.point-indicator {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform-origin: center center;
+  transition: opacity 0.3s ease;
+}
+
+.point-marker {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.point-marker i {
+  font-size: 18px;
+  color: #05d545;
+  filter: drop-shadow(0 0 8px rgba(5, 213, 69, 0.8));
+  animation: bounce-point 2s ease-in-out infinite;
+}
+
+@keyframes bounce-point {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.point-indicator.in-view .point-marker i {
+  color: #ffa500;
+  filter: drop-shadow(0 0 12px rgba(255, 165, 0, 0.9));
+  font-size: 22px;
+}
+
+.point-distance {
+  font-size: 10px;
+  font-weight: bold;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 2px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.point-marker:hover {
+  transform: translateX(-50%) scale(1.2);
+}
+
+.compass-info {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 2px solid rgba(78, 205, 196, 0.4);
+  backdrop-filter: blur(5px);
+}
+
+.heading-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #4ecdc4;
+  text-shadow: 0 0 10px rgba(78, 205, 196, 0.6);
+}
+
+.heading-label {
+  font-size: 12px;
+  color: #fff;
+  opacity: 0.8;
+}
+
+/* Lista de pontos */
+.points-list {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  max-height: 200px;
+  background-color: rgba(0, 0, 0, 0.85);
+  border-radius: 16px;
+  border: 2px solid rgba(78, 205, 196, 0.3);
+  overflow: hidden;
+  pointer-events: all;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.points-list-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: rgba(78, 205, 196, 0.2);
+  border-bottom: 1px solid rgba(78, 205, 196, 0.3);
+  color: #4ecdc4;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.points-items {
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.points-items::-webkit-scrollbar {
+  width: 6px;
+}
+
+.points-items::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.points-items::-webkit-scrollbar-thumb {
+  background: rgba(78, 205, 196, 0.3);
+  border-radius: 3px;
+}
+
+.points-items::-webkit-scrollbar-thumb:hover {
+  background: rgba(78, 205, 196, 0.5);
+}
+
+.point-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.point-item:hover {
+  background-color: rgba(78, 205, 196, 0.15);
+  border-color: rgba(78, 205, 196, 0.4);
+  transform: translateX(5px);
+}
+
+.point-item:last-child {
+  margin-bottom: 0;
+}
+
+.point-item-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(5, 213, 69, 0.2);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.point-item-icon i {
+  color: #05d545;
+  font-size: 16px;
+}
+
+.point-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.point-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.point-details {
+  color: #888;
+  font-size: 12px;
+}
+
+.point-item-arrow {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(78, 205, 196, 0.2);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.point-item-arrow i {
+  color: #4ecdc4;
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+/* Mensagem de erro */
+.compass-error {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(231, 76, 60, 0.9);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 1001;
+  pointer-events: all;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .compass-wrapper {
+    width: 160px;
+    height: 160px;
+  }
+
+  .compass-center {
+    width: 50px;
+    height: 50px;
+  }
+
+  .compass-mark {
+    font-size: 14px;
+  }
+
+  .compass-mark.north {
+    font-size: 18px;
+  }
+
+  .points-list {
+    width: 95%;
+  }
+
+  .point-name {
+    font-size: 13px;
+  }
+
+  .point-details {
+    font-size: 11px;
+  }
+}
+
+@media (max-height: 700px) {
+  .compass-wrapper {
+    margin-top: 10px;
+  }
+
+  .points-list {
+    max-height: 150px;
+  }
+
+  .points-items {
+    max-height: 100px;
+  }
+}
