@@ -110,27 +110,27 @@ function ARView({
 	const createTextLabel = (text, position) => {
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d');
-		
+
 		const fontSize = 48;
 		context.font = `Bold ${fontSize}px Lexend, Arial, sans-serif`;
-		
+
 		const metrics = context.measureText(text);
 		const textWidth = metrics.width;
-		
+
 		const padding = textWidth * 0.4;
 		const canvasWidth = Math.ceil(textWidth + padding);
 		const canvasHeight = Math.ceil(fontSize * 2);
-		
+
 		canvas.width = canvasWidth;
 		canvas.height = canvasHeight;
-		
+
 		context.font = `Bold ${fontSize}px Lexend, Arial, sans-serif`;
 		context.textAlign = 'center';
 		context.textBaseline = 'middle';
-		
+
 		const borderRadius = 15;
 		context.fillStyle = 'rgba(0, 0, 0, 0.7)';
-		
+
 		context.beginPath();
 		context.moveTo(borderRadius, 0);
 		context.lineTo(canvasWidth - borderRadius, 0);
@@ -143,29 +143,29 @@ function ARView({
 		context.quadraticCurveTo(0, 0, borderRadius, 0);
 		context.closePath();
 		context.fill();
-		
+
 		context.fillStyle = '#ffffff';
 		context.fillText(text, canvasWidth / 2, canvasHeight / 2);
-		
+
 		const texture = new THREE.CanvasTexture(canvas);
 		texture.needsUpdate = true;
-		
-		const spriteMaterial = new THREE.SpriteMaterial({ 
+
+		const spriteMaterial = new THREE.SpriteMaterial({
 			map: texture,
 			transparent: true,
 			depthTest: false,
 			depthWrite: false
 		});
-		
+
 		const sprite = new THREE.Sprite(spriteMaterial);
-		
+
 		const aspectRatio = canvasWidth / canvasHeight;
 		const baseHeight = 0.15;
 		sprite.scale.set(baseHeight * aspectRatio, baseHeight, 1);
-		
+
 		sprite.position.copy(position);
 		sprite.position.y += 0.4;
-		
+
 		return sprite;
 	};
 
@@ -584,11 +584,7 @@ function ARView({
 		if (camera && pontoReferencia?.arPosition) {
 			const pos = camera.position.clone();
 			const relativePos = pos.sub(pontoReferencia.arPosition);
-			setUserPosition({ 
-				x: relativePos.x, 
-				y: relativePos.y, 
-				z: relativePos.z 
-			});
+			setUserPosition({ x: relativePos.x, y: relativePos.y, z: relativePos.z });
 		}
 
 		if (flipAnimationsRef.current.length > 0) {
@@ -647,55 +643,40 @@ function ARView({
 
 	return (
 		<>
-			{/* Container AR (Canvas Three.js) */}
-			<div
-				ref={containerRef}
-				style={{
-					position: "fixed",
-					top: 0,
-					left: 0,
-					width: "100%",
-					height: "100%",
-					zIndex: 1,
-				}}
-			>
-				{/* Bússola AR - Sobreposta ao canvas quando AR estiver ativo */}
-				{isARActive && showCompass && pontosDisponiveis.length > 0 && (
-					<Compass 
-						userPosition={userPosition}
-						targetPoints={pontosDisponiveis}
-						onPointSelect={handlePointSelect}
-					/>
-				)}
+			{/* 🧭 BÚSSOLA - sobreposta ao canvas AR */}
+			{isARActive && showCompass && pontosDisponiveis.length > 0 && (
+				<Compass
+					userPosition={userPosition}
+					targetPoints={pontosDisponiveis}
+					onPointSelect={(p) => console.log("Ponto selecionado:", p)}
+				/>
+			)}
 
-				{/* Botão para toggle da bússola */}
-				{isARActive && (
-					<button
-						onClick={() => setShowCompass(!showCompass)}
-						style={{
-							position: 'fixed',
-							top: '20px',
-							right: '20px',
-							zIndex: 1002,
-							backgroundColor: showCompass ? 'rgba(78, 205, 196, 0.9)' : 'rgba(0, 0, 0, 0.7)',
-							color: showCompass ? '#000' : '#4ecdc4',
-							border: '2px solid #4ecdc4',
-							borderRadius: '50%',
-							width: '50px',
-							height: '50px',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							cursor: 'pointer',
-							fontSize: '20px',
-							boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-							transition: 'all 0.3s ease',
-						}}
-					>
-						<i className="fa-solid fa-compass"></i>
-					</button>
-				)}
-			</div>
+			{/* Botão flutuante para mostrar/ocultar a bússola */}
+			{isARActive && (
+				<button
+					onClick={() => setShowCompass(!showCompass)}
+					style={{
+						position: "fixed",
+						top: "20px",
+						right: "20px",
+						zIndex: 1002,
+						backgroundColor: showCompass ? "#4ecdc4" : "rgba(0,0,0,0.7)",
+						color: showCompass ? "#000" : "#4ecdc4",
+						border: "none",
+						borderRadius: "50%",
+						width: "50px",
+						height: "50px",
+						fontSize: "20px",
+						boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+						cursor: "pointer",
+						transition: "all 0.3s ease",
+					}}
+				>
+					<i className="fa-solid fa-compass"></i>
+				</button>
+			)}
+
 
 			{/* Modal de Prêmio */}
 			{showPrizeModal && currentPrize && (
@@ -737,9 +718,8 @@ function ARView({
 									left: "-50%",
 									width: "200%",
 									height: "200%",
-									background: `conic-gradient(from 0deg, transparent, ${
-										rarityColors[currentPrize.rarity]
-									}30, transparent)`,
+									background: `conic-gradient(from 0deg, transparent, ${rarityColors[currentPrize.rarity]
+										}30, transparent)`,
 									animation: "rotate 3s linear infinite",
 									pointerEvents: "none",
 								}}
@@ -787,8 +767,8 @@ function ARView({
 							{currentPrize.rarity === "Ultra-Raro"
 								? "INCRÍVEL!"
 								: currentPrize.rarity === "Raro"
-								? "PARABÉNS!"
-								: "Você ganhou!"}
+									? "PARABÉNS!"
+									: "Você ganhou!"}
 						</h2>
 
 						<div
