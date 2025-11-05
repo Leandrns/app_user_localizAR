@@ -23,6 +23,8 @@ function ARView({
 	const tempMatrixRef = useRef(new THREE.Matrix4());
 	const flipAnimationsRef = useRef([]);
 	const lastTimestampRef = useRef(0);
+	const escalaPonto = 0.2;
+	const alturaPonto = 2;
 
 	const [showPrizeModal, setShowPrizeModal] = useState(false);
 	const [currentPrize, setCurrentPrize] = useState(null);
@@ -478,8 +480,8 @@ function ARView({
 			(gltf) => {
 				const model = gltf.scene;
 				model.position.copy(posicao);
-				model.position.y += 1;
-				model.scale.set(0.1, 0.1, 0.1);
+				model.position.y += alturaPonto;
+				model.scale.set(escalaPonto, escalaPonto, escalaPonto);
 
 				model.userData = {
 					carregado: true,
