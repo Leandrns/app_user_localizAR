@@ -178,7 +178,7 @@ function ARView({
 		
 		// Posiciona acima do marcador
 		sprite.position.copy(position);
-		sprite.position.y += 0.8;
+		sprite.position.y += 1;
 		
 		return sprite;
 	};
