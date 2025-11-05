@@ -24,7 +24,7 @@ function ARView({
 	const flipAnimationsRef = useRef([]);
 	const lastTimestampRef = useRef(0);
 	const escalaPonto = 0.2;
-	const alturaPonto = 2;
+	const alturaPonto = 5;
 
 	const [showPrizeModal, setShowPrizeModal] = useState(false);
 	const [currentPrize, setCurrentPrize] = useState(null);
@@ -178,7 +178,7 @@ function ARView({
 		
 		// Posiciona acima do marcador
 		sprite.position.copy(position);
-		sprite.position.y += 0.4; // 40cm acima do marcador
+		sprite.position.y += 0.8;
 		
 		return sprite;
 	};
