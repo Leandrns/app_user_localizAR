@@ -23,8 +23,8 @@ function ARView({
 	const tempMatrixRef = useRef(new THREE.Matrix4());
 	const flipAnimationsRef = useRef([]);
 	const lastTimestampRef = useRef(0);
-	const escalaPonto = 0.2;
-	const alturaPonto = 5;
+	const escalaPonto = 0.3;
+	const alturaPonto = 4;
 
 	const [showPrizeModal, setShowPrizeModal] = useState(false);
 	const [currentPrize, setCurrentPrize] = useState(null);
