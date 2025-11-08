@@ -113,7 +113,7 @@ function ARView({
 		const context = canvas.getContext('2d');
 		
 		// Define a fonte ANTES de medir o texto
-		const fontSize = 48;
+		const fontSize = 100;
 		context.font = `Bold ${fontSize}px Lexend, Arial, sans-serif`;
 		
 		// Mede a largura real do texto
