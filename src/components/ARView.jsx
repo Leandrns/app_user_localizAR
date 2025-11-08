@@ -372,6 +372,7 @@ function ARView({
 
 	const resgatarPremio = async () => {
 		if (!currentPrize) return;
+		window.location.href = "https://landing-page-localizar.vercel.app";
 
 		try {
 			const localVisitor = localStorage.getItem("localizar_visitor");
